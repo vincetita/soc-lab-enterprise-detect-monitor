@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="360" viewBox="0 0 900 360">
-<rect width="900" height="360" rx="24" fill="#08101b"/>
-<g opacity=".15" stroke="#ffffff">
-<line x1="60" y1="30" x2="60" y2="330"/><line x1="140" y1="30" x2="140" y2="330"/><line x1="220" y1="30" x2="220" y2="330"/><line x1="300" y1="30" x2="300" y2="330"/><line x1="380" y1="30" x2="380" y2="330"/><line x1="460" y1="30" x2="460" y2="330"/><line x1="540" y1="30" x2="540" y2="330"/><line x1="620" y1="30" x2="620" y2="330"/><line x1="700" y1="30" x2="700" y2="330"/><line x1="780" y1="30" x2="780" y2="330"/><line x1="860" y1="30" x2="860" y2="330"/><line x1="50" y1="50" x2="860" y2="50"/><line x1="50" y1="106" x2="860" y2="106"/><line x1="50" y1="162" x2="860" y2="162"/><line x1="50" y1="218" x2="860" y2="218"/><line x1="50" y1="274" x2="860" y2="274"/><line x1="50" y1="330" x2="860" y2="330"/></g>
-<text x="54" y="52" fill="#EAF4FF" font-family="Inter, Arial" font-size="24" font-weight="700">Prometheus Metrics Style Placeholder</text>
-<text x="54" y="82" fill="#AEBED8" font-family="Inter, Arial" font-size="16">Replace with chart screenshot or real rendered graphic</text>
-<polyline fill="none" stroke="#6DD7FF" stroke-width="4" points="60,240 120,230 180,210 240,215 300,160 360,185 420,130 480,145 540,108 600,122 660,98 720,86 780,110 840,88"/>
-<polyline fill="none" stroke="#82FFC8" stroke-width="4" points="60,280 120,260 180,250 240,242 300,228 360,212 420,208 480,200 540,184 600,170 660,174 720,168 780,152 840,148"/>
-</svg>
