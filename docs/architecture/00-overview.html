@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOC Lab Overview</title>
+<style>
+body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:#050914;color:#f3f7ff;line-height:1.65}
+main{width:min(92%,1100px);margin:0 auto;padding:48px 0 80px}
+article{background:#0d1728;border:1px solid rgba(255,255,255,.14);border-radius:22px;padding:34px}
+h1{font-size:42px;line-height:1.1;margin-top:0} h2{margin-top:34px}
+p,li,td{color:#a8b7d6} a{color:#00d4ff}
+code{background:#020711;color:#dffcff;border-radius:6px;padding:2px 6px}
+pre{background:#020711;color:#dffcff;border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:16px;overflow:auto}
+pre code{background:transparent;padding:0}
+table{width:100%;border-collapse:collapse;margin:18px 0 28px}
+th,td{border:1px solid rgba(255,255,255,.14);padding:11px 13px;text-align:left}
+th{background:rgba(0,212,255,.12);color:#eaffff}
+.back{display:inline-block;margin-bottom:20px;padding:10px 15px;border-radius:999px;border:1px solid rgba(255,255,255,.14);color:#00d4ff;text-decoration:none;font-weight:800}
+</style>
+</head>
+<body>
+<main>
+<a class="back" href="../index.html">← Back to SOC Portfolio</a>
+<article>
+<h1>SOC Lab Overview</h1>
+<h2>Executive Summary</h2>
+<p>This SOC lab is a multi-VM enterprise-style cybersecurity environment built in VMware Workstation. It integrates endpoint security, network monitoring, availability monitoring, metrics, dashboards, Windows identity infrastructure, and controlled attack simulation.</p>
+<p>The lab is designed to show more than tool installation. It demonstrates how attacks produce evidence across multiple layers and how a SOC analyst correlates those signals into a single incident story.</p>
+<h2>Systems</h2>
+<table><thead><tr><th>System</th><th>IP</th><th>Role</th></tr></thead><tbody><tr><td>Security Onion</td><td>192.168.117.10</td><td>Network detection, Suricata, Zeek, PCAP, Hunt</td></tr><tr><td>Ubuntu</td><td>192.168.117.30</td><td>Linux monitored node, web/SSH target, monitoring services</td></tr><tr><td>Nagios</td><td>192.168.117.30</td><td>Availability monitoring</td></tr><tr><td>Prometheus</td><td>192.168.117.30:9090</td><td>Metrics collection</td></tr><tr><td>Grafana</td><td>192.168.117.30:3000</td><td>Dashboards and visualization</td></tr><tr><td>Wazuh</td><td>192.168.117.50</td><td>SIEM and endpoint telemetry</td></tr><tr><td>Kali</td><td>192.168.117.129</td><td>Attacker VM</td></tr><tr><td>DC01</td><td>192.168.117.130</td><td>Windows Server 2025 AD DS, DNS, Kerberos</td></tr><tr><td>Win11Client</td><td>192.168.117.100</td><td>Domain-joined Windows endpoint</td></tr><tr><td>Win11 NAT</td><td>192.168.20.133</td><td>Internet/update interface</td></tr></tbody></table>
+<h2>Monitoring Philosophy</h2>
+<table><thead><tr><th>Layer</th><th>Tool</th><th>Question Answered</th></tr></thead><tbody><tr><td>Network</td><td>Security Onion</td><td>What happened on the wire?</td></tr><tr><td>Endpoint / SIEM</td><td>Wazuh</td><td>What happened on the host?</td></tr><tr><td>Availability</td><td>Nagios</td><td>Is the service up?</td></tr><tr><td>Metrics</td><td>Prometheus</td><td>How is the system performing?</td></tr><tr><td>Visualization</td><td>Grafana</td><td>What does the trend/dashboard show?</td></tr></tbody></table>
+<h2>Core Value</h2>
+<p>The strongest part of this lab is cross-tool correlation:</p>
+<ol><li>Kali triggers attack activity.</li><li>Ubuntu, Win11, or DC01 generates logs.</li><li>Wazuh detects endpoint events.</li><li>Security Onion shows network evidence.</li><li>Prometheus collects metrics.</li><li>Grafana visualizes impact.</li><li>Nagios validates availability.</li><li>Analyst builds an incident timeline.</li></ol>
+<h2>Key Portfolio Assets</h2>
+<ul><li><code>gifs/simulations/full-lab-overview.gif</code></li><li><code>gifs/simulations/end-to-end-bruteforce.gif</code></li><li><code>gifs/simulations/end-to-end-recon.gif</code></li><li><code>gifs/simulations/end-to-end-web-enum.gif</code></li><li><code>gifs/simulations/end-to-end-windows-bruteforce.gif</code></li><li><code>gifs/simulations/end-to-end-lateral-movement.gif</code></li></ul>
+</article>
+</main>
+</body>
+</html>
