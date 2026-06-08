@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Web Enumeration Commands</title><style>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Recon Commands</title><style>
 :root{--bg:#050914;--panel:#0d1728;--text:#f3f7ff;--muted:#a8b7d6;--accent:#00d4ff;--border:rgba(255,255,255,.14)}
 *{box-sizing:border-box}
 body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:radial-gradient(circle at top right,rgba(0,212,255,.12),transparent 30%),linear-gradient(180deg,#050914,#08111f);color:var(--text);line-height:1.65}
@@ -21,8 +21,11 @@ th{background:rgba(0,212,255,.13);color:#eaffff}
 .nav{display:flex;gap:12px;flex-wrap:wrap}.nav a{display:inline-block;border:1px solid var(--border);border-radius:999px;padding:10px 14px;background:rgba(255,255,255,.04);text-decoration:none;font-weight:800}
 footer{color:var(--muted);border-top:1px solid var(--border);padding-top:22px;margin-top:34px;font-size:.92rem}
 </style></head>
-<body><header><div class="nav"><a href="index.html">Overview</a><a href="commands.html">Commands</a><a href="../../index.html">Back to Portfolio</a></div></header><main><article><span class="badge">SOC Lab · Web Enumeration Module</span><h1>Web Enumeration Commands</h1>
+<body><header><div class="nav"><a href="index.html">Overview</a><a href="commands.html">Commands</a><a href="../../index.html">Back to Portfolio</a></div></header><main><article><span class="badge">SOC Lab · Recon Module</span><h1>Recon Commands</h1>
 <pre><code>ping 192.168.117.30
-curl -I http://192.168.117.30
-nmap -p 80 192.168.117.30
-gobuster dir -u http://192.168.117.30 -w /usr/share/wordlists/dirb/common.txt -o attacks/web-enum/logs/gobuster.log</code></pre><footer>Enterprise SOC Lab Portfolio · Web Enumeration Module</footer></article></main></body></html>
+ping 192.168.117.100
+ping 192.168.117.130
+nmap -sn 192.168.117.0/24
+nmap -sV 192.168.117.130
+sudo nmap -A 192.168.117.130
+nmap 192.168.117.0/24 &gt; attacks/recon/logs/nmap-scan.log</code></pre><footer>Enterprise SOC Lab Portfolio · Network Reconnaissance Module</footer></article></main></body></html>
