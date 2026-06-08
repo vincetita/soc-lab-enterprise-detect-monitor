@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Nagios Troubleshooting</title><style>
+:root{--bg:#050914;--panel:#0d1728;--text:#f3f7ff;--muted:#a8b7d6;--accent:#00d4ff;--border:rgba(255,255,255,.14)}
+*{box-sizing:border-box}
+body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:radial-gradient(circle at top right,rgba(0,212,255,.12),transparent 30%),linear-gradient(180deg,#050914,#08111f);color:var(--text);line-height:1.65}
+header{border-bottom:1px solid var(--border);background:rgba(5,9,20,.9);padding:22px 5vw;position:sticky;top:0}
+main{width:min(92%,1150px);margin:0 auto;padding:44px 0 80px}
+article{background:rgba(13,23,40,.9);border:1px solid var(--border);border-radius:24px;padding:36px;box-shadow:0 24px 70px rgba(0,0,0,.38)}
+h1{font-size:clamp(2rem,4vw,3.5rem);line-height:1.05;margin:0 0 22px}
+h2{margin-top:34px;border-left:4px solid var(--accent);padding-left:14px}
+p,li,td{color:var(--muted)}
+a{color:var(--accent)}
+code{background:#020711;color:#dffcff;border:1px solid var(--border);border-radius:7px;padding:2px 7px}
+pre{background:#020711;color:#dffcff;border:1px solid var(--border);border-radius:16px;padding:18px;overflow:auto}
+pre code{background:transparent;border:0;padding:0;color:inherit}
+table{width:100%;border-collapse:collapse;margin:18px 0 28px}
+th,td{border:1px solid var(--border);padding:12px 14px;text-align:left}
+th{background:rgba(0,212,255,.13);color:#eaffff}
+blockquote{margin:18px 0;padding:16px 18px;border-left:4px solid var(--accent);background:rgba(0,212,255,.08);color:#f3f7ff}
+.badge{display:inline-block;padding:7px 12px;border-radius:999px;background:rgba(0,212,255,.12);border:1px solid rgba(0,212,255,.3);color:#dffcff;margin-bottom:16px;font-weight:800}
+.nav{display:flex;gap:12px;flex-wrap:wrap}.nav a{display:inline-block;border:1px solid var(--border);border-radius:999px;padding:10px 14px;background:rgba(255,255,255,.04);text-decoration:none;font-weight:800}
+footer{color:var(--muted);border-top:1px solid var(--border);padding-top:22px;margin-top:34px;font-size:.92rem}
+</style></head>
+<body><header><div class="nav"><a href="index.html">Nagios</a><a href="troubleshooting.html">Troubleshooting</a><a href="../../index.html">Back to Portfolio</a></div></header><main><article><span class="badge">SOC Lab · Nagios Availability Monitoring</span><h1>Nagios Troubleshooting</h1>
+<h2>Validate Configuration</h2>
+<pre><code>/usr/local/nagios/bin/nagios -v /usr/local/nagios/etc/nagios.cfg</code></pre>
+<h2>Restart Services</h2>
+<pre><code>sudo systemctl restart nagios
+sudo systemctl restart apache2</code></pre>
+<h2>Common Problems</h2>
+<table><thead><tr><th>Issue</th><th>Cause</th><th>Fix</th></tr></thead><tbody><tr><td>Web UI unavailable</td><td>Apache stopped</td><td>restart apache2</td></tr><tr><td>Host down</td><td>IP mismatch</td><td>verify Host-Only IP</td></tr><tr><td>Service unknown</td><td>wrong cfg</td><td>validate Nagios config</td></tr></tbody></table><footer>Enterprise SOC Lab Portfolio · Nagios Monitoring</footer></article></main></body></html>
