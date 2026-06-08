@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Network Zones</title>
+<style>
+body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:#050914;color:#f3f7ff;line-height:1.65}
+main{width:min(92%,1100px);margin:0 auto;padding:48px 0 80px}
+article{background:#0d1728;border:1px solid rgba(255,255,255,.14);border-radius:22px;padding:34px}
+h1{font-size:42px;line-height:1.1;margin-top:0} h2{margin-top:34px}
+p,li,td{color:#a8b7d6} a{color:#00d4ff}
+code{background:#020711;color:#dffcff;border-radius:6px;padding:2px 6px}
+pre{background:#020711;color:#dffcff;border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:16px;overflow:auto}
+pre code{background:transparent;padding:0}
+table{width:100%;border-collapse:collapse;margin:18px 0 28px}
+th,td{border:1px solid rgba(255,255,255,.14);padding:11px 13px;text-align:left}
+th{background:rgba(0,212,255,.12);color:#eaffff}
+.back{display:inline-block;margin-bottom:20px;padding:10px 15px;border-radius:999px;border:1px solid rgba(255,255,255,.14);color:#00d4ff;text-decoration:none;font-weight:800}
+</style>
+</head>
+<body>
+<main>
+<a class="back" href="../index.html">← Back to SOC Portfolio</a>
+<article>
+<h1>Network Zones</h1>
+<h2>Purpose</h2>
+<p>This file explains the network segmentation used in the SOC lab.</p>
+<h2>Zone 1: Host-Only SOC Network</h2>
+<p>Subnet:</p>
+<pre><code>192.168.117.0/24</code></pre>
+<p>Purpose:</p>
+<ul><li>internal lab communication</li><li>attack simulation</li><li>monitoring traffic</li><li>Windows domain communication</li><li>SIEM/agent traffic</li><li>threat hunting evidence</li></ul>
+<p>Systems:</p>
+<table><thead><tr><th>IP</th><th>System</th></tr></thead><tbody><tr><td>192.168.117.10</td><td>Security Onion</td></tr><tr><td>192.168.117.30</td><td>Ubuntu / Nagios / Prometheus / Grafana</td></tr><tr><td>192.168.117.50</td><td>Wazuh</td></tr><tr><td>192.168.117.129</td><td>Kali</td></tr><tr><td>192.168.117.130</td><td>DC01</td></tr><tr><td>192.168.117.100</td><td>Win11Client</td></tr></tbody></table>
+<h2>Zone 2: NAT Network</h2>
+<p>Subnet:</p>
+<pre><code>192.168.20.0/24</code></pre>
+<p>Purpose:</p>
+<ul><li>updates</li><li>installer downloads</li><li>internet access</li><li>package installation</li></ul>
+<p>Observed Win11 NAT:</p>
+<pre><code>192.168.20.133</code></pre>
+<h2>Traffic Model</h2>
+<table><thead><tr><th>Source</th><th>Destination</th><th>Purpose</th></tr></thead><tbody><tr><td>Kali</td><td>Ubuntu</td><td>SSH brute force, web enumeration</td></tr><tr><td>Kali</td><td>DC01</td><td>recon, RDP scan, SMB scan</td></tr><tr><td>Kali</td><td>Win11Client</td><td>RDP scan/brute force</td></tr><tr><td>Win11Client</td><td>DC01</td><td>authentication, DNS, Kerberos, GPO</td></tr><tr><td>Wazuh agents</td><td>Wazuh</td><td>log forwarding</td></tr><tr><td>Prometheus</td><td>exporters</td><td>metrics scraping</td></tr><tr><td>Nagios</td><td>hosts/services</td><td>availability checks</td></tr><tr><td>Security Onion</td><td>internal traffic</td><td>network detection</td></tr></tbody></table>
+<h2>Screenshot Evidence</h2>
+<p>Save topology evidence:</p>
+<pre><code>architecture/diagrams/vmware-lab-inventory.png
+architecture/diagrams/network-connectivity.png
+architecture/diagrams/soc-lab-network.png</code></pre>
+</article>
+</main>
+</body>
+</html>

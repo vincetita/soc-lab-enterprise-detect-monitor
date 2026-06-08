@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System Relationships</title>
+<style>
+body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:#050914;color:#f3f7ff;line-height:1.65}
+main{width:min(92%,1100px);margin:0 auto;padding:48px 0 80px}
+article{background:#0d1728;border:1px solid rgba(255,255,255,.14);border-radius:22px;padding:34px}
+h1{font-size:42px;line-height:1.1;margin-top:0} h2{margin-top:34px}
+p,li,td{color:#a8b7d6} a{color:#00d4ff}
+code{background:#020711;color:#dffcff;border-radius:6px;padding:2px 6px}
+pre{background:#020711;color:#dffcff;border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:16px;overflow:auto}
+pre code{background:transparent;padding:0}
+table{width:100%;border-collapse:collapse;margin:18px 0 28px}
+th,td{border:1px solid rgba(255,255,255,.14);padding:11px 13px;text-align:left}
+th{background:rgba(0,212,255,.12);color:#eaffff}
+.back{display:inline-block;margin-bottom:20px;padding:10px 15px;border-radius:999px;border:1px solid rgba(255,255,255,.14);color:#00d4ff;text-decoration:none;font-weight:800}
+</style>
+</head>
+<body>
+<main>
+<a class="back" href="../index.html">← Back to SOC Portfolio</a>
+<article>
+<h1>System Relationships</h1>
+<h2>Purpose</h2>
+<p>This file explains how the SOC systems interact and how evidence moves through the lab.</p>
+<h2>High-Level Relationship</h2>
+<pre><code>Kali → Targets → Logs/Traffic/Metrics → Wazuh/Security Onion/Prometheus/Nagios → Grafana/Correlation</code></pre>
+<h2>Identity Layer</h2>
+<p>DC01 provides:</p>
+<ul><li>AD DS</li><li>DNS</li><li>Kerberos</li><li>authentication</li><li>domain policy</li></ul>
+<p>Win11Client consumes:</p>
+<ul><li>domain login</li><li>DNS</li><li>Kerberos tickets</li><li>GPO</li><li>Windows Event telemetry</li></ul>
+<h2>Detection Layer</h2>
+<p>Wazuh collects:</p>
+<ul><li>Ubuntu auth logs</li><li>Apache logs</li><li>Windows Event Logs</li><li>Sysmon logs</li><li>DC01 authentication events</li></ul>
+<p>Security Onion collects:</p>
+<ul><li>Nmap scan evidence</li><li>SSH traffic</li><li>HTTP enumeration</li><li>RDP traffic</li><li>SMB traffic</li><li>Kerberos traffic</li><li>WinRM traffic</li></ul>
+<h2>Metrics and Visualization</h2>
+<p>Prometheus scrapes:</p>
+<ul><li>Linux node exporter</li><li>Windows exporter</li><li>Prometheus self-metrics</li></ul>
+<p>Grafana visualizes:</p>
+<ul><li>CPU usage</li><li>memory usage</li><li>network throughput</li><li>Windows metrics</li><li>Linux metrics</li><li>SOC overview dashboards</li></ul>
+<p>Nagios validates:</p>
+<ul><li>host up/down</li><li>service status</li><li>HTTP/SSH availability</li></ul>
+<h2>Example: SSH Brute Force</h2>
+<ol><li>Kali runs Hydra.</li><li>Ubuntu logs failed SSH attempts.</li><li>Wazuh raises brute-force alert.</li><li>Security Onion shows SSH connection bursts.</li><li>Prometheus records CPU/network activity.</li><li>Grafana displays the spike.</li><li>Nagios confirms Ubuntu is still up.</li></ol>
+<h2>Example: Kerberos + Lateral Movement</h2>
+<ol><li>Win11Client purges and requests new Kerberos tickets.</li><li>DC01 logs Event IDs 4768 and 4769.</li><li>WinRM remote command creates lateral movement evidence.</li><li>Wazuh collects Windows events.</li><li>Security Onion shows Kerberos/WinRM/SMB traffic.</li><li>Grafana visualizes Windows metrics.</li></ol>
+</article>
+</main>
+</body>
+</html>
