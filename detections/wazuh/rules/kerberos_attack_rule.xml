@@ -1,0 +1,9 @@
+<group name="kerberos_detection">
+  <rule id="100510" level="10">
+    <field name="win.system.eventID">4768</field>
+    <description>Kerberos ticket activity detected</description>
+    <mitre>
+      <id>T1558</id>
+    </mitre>
+  </rule>
+</group>

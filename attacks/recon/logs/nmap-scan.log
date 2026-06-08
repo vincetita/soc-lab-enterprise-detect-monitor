@@ -1,0 +1,75 @@
+
+┌──(kali㉿kali)-[~]
+└─$ nmap -sS -Pn -T4 192.168.117.0/24
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-05-25 11:34 EDT
+Nmap scan report for 192.168.117.1
+Host is up (0.00088s latency).
+Not shown: 999 filtered tcp ports (no-response)
+PORT     STATE SERVICE
+8000/tcp open  http-alt
+MAC Address: 00:50:56:C0:00:01 (VMware)
+
+Nmap scan report for 192.168.117.10
+Host is up (0.040s latency).
+Not shown: 999 filtered tcp ports (no-response)
+PORT   STATE SERVICE
+22/tcp open  ssh
+MAC Address: 00:0C:29:B2:13:77 (VMware)
+
+Nmap scan report for 192.168.117.30
+Host is up (0.00091s latency).
+Not shown: 995 closed tcp ports (reset)
+PORT     STATE SERVICE
+22/tcp   open  ssh
+80/tcp   open  http
+3000/tcp open  ppp
+9090/tcp open  zeus-admin
+9100/tcp open  jetdirect
+MAC Address: 00:50:56:37:E5:AA (VMware)
+
+Nmap scan report for 192.168.117.50
+Host is up (0.0017s latency).
+Not shown: 996 closed tcp ports (reset)
+PORT     STATE SERVICE
+22/tcp   open  ssh
+80/tcp   open  http
+443/tcp  open  https
+9100/tcp open  jetdirect
+MAC Address: 00:50:56:38:CA:4F (VMware)
+
+Nmap scan report for 192.168.117.100
+Host is up (0.023s latency).
+Not shown: 996 filtered tcp ports (no-response)
+PORT    STATE SERVICE
+22/tcp  open  ssh
+135/tcp open  msrpc
+139/tcp open  netbios-ssn
+445/tcp open  microsoft-ds
+MAC Address: 00:0C:29:07:15:69 (VMware)
+
+Nmap scan report for 192.168.117.130
+Host is up (0.0016s latency).
+Not shown: 988 filtered tcp ports (no-response)
+PORT     STATE SERVICE
+22/tcp   open  ssh
+53/tcp   open  domain
+88/tcp   open  kerberos-sec
+135/tcp  open  msrpc
+139/tcp  open  netbios-ssn
+389/tcp  open  ldap
+445/tcp  open  microsoft-ds
+464/tcp  open  kpasswd5
+593/tcp  open  http-rpc-epmap
+636/tcp  open  ldapssl
+3269/tcp open  globalcatLDAPssl
+5985/tcp open  wsman
+MAC Address: 00:0C:29:CF:03:F7 (VMware)
+
+Nmap scan report for 192.168.117.129
+Host is up (0.000015s latency).
+Not shown: 998 closed tcp ports (reset)
+PORT     STATE SERVICE
+22/tcp   open  ssh
+9100/tcp open  jetdirect
+
+Nmap done: 256 IP addresses (7 hosts up) scanned in 36.46 seconds

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Vincent Tita SOC lab portfolio: attack simulation, detections, observability, MITRE mapping, incident reports, and recruiter-friendly demos." />
+  <title>Vincent Tita | SOC Lab Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <a class="brand" href="#hero">
+      <span class="brand-mark"></span>
+      <span>
+        <strong>Vincent Tita</strong>
+        <small>Blue-Team Portfolio · SOC Lab</small>
+      </span>
+    </a>
+    <nav class="nav" id="nav">
+      <a href="#hero">Home</a>
+      <a href="#demos">Demos</a>
+      <a href="#charts">Charts</a>
+      <a href="#mitre">MITRE</a>
+      <a href="#reports">Reports</a>
+      <a href="#qa">Interview Q&A</a>
+      <a href="#domain">Domain</a>
+    </nav>
+    <div class="top-actions">
+      <a class="pill" href="https://github.com/vincetita" target="_blank" rel="noreferrer">GitHub</a>
+      <a class="pill alt" href="../docs/Vincent-Tita-CV-PLACEHOLDER.txt">CV</a>
+      <button class="menu-btn" id="menuBtn" aria-label="Toggle menu">☰</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="hero" class="hero section">
+      <div class="hero-copy">
+        <div class="eyebrow">Elite recruiter version</div>
+        <h1>From attack simulation to <span class="gradient">clear defensive evidence</span>.</h1>
+        <p class="lead">A polished SOC portfolio that turns brute force, reconnaissance, web enumeration, detections, uptime checks, metrics, and case-study reporting into one easy interview narrative.</p>
+        <div class="terminal glass">
+          <div class="terminal-head"><span></span><span></span><span></span><small>demo.sh</small></div>
+          <div class="terminal-body">$ <span id="typedLine"></span><span class="cursor"></span></div>
+        </div>
+        <div class="hero-actions">
+          <a class="btn primary" href="#demos">Open live demos</a>
+          <button class="btn secondary" data-open-modal="modalAttack">Explain this attack</button>
+        </div>
+        <div class="stats">
+          <article><strong>3</strong><span>attack stories</span></article>
+          <article><strong>4</strong><span>visibility layers</span></article>
+          <article><strong>6</strong><span>portfolio sections</span></article>
+        </div>
+      </div>
+
+      <div class="hero-stage">
+        <div class="carousel glass" data-carousel>
+          <article class="slide active">
+            <span class="slide-label">Attack story</span>
+            <h2>Hydra SSH brute force</h2>
+            <p>Show attacker action, Ubuntu failures, Wazuh alerts, Security Onion traffic, and Prometheus context as one clean chain.</p>
+            <div class="viz bars"><i></i><i></i><i></i><i></i><i></i></div>
+          </article>
+          <article class="slide">
+            <span class="slide-label">Recon story</span>
+            <h2>Nmap active scanning</h2>
+            <p>Use reconnaissance as an early-warning narrative before exploitation even begins.</p>
+            <div class="viz blocks"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          </article>
+          <article class="slide">
+            <span class="slide-label">Monitoring story</span>
+            <h2>Prometheus + Nagios</h2>
+            <p>Prove the lab is not only about alerts, but also uptime, trends, and operational maturity.</p>
+            <div class="viz rings"><i></i><i></i><i></i></div>
+          </article>
+          <div class="carousel-controls">
+            <button class="icon-btn" data-prev>‹</button>
+            <div class="dots" data-dots></div>
+            <button class="icon-btn" data-next>›</button>
+          </div>
+        </div>
+        <aside class="glass pitch">
+          <div class="eyebrow small">Recruiter pitch</div>
+          <h3>What this proves</h3>
+          <ul>
+            <li>Hands-on security monitoring, not only theory</li>
+            <li>Multi-tool correlation across host, network, uptime, and metrics</li>
+            <li>Strong communication through GitHub-ready documentation</li>
+            <li>Frontend polish on top of technical content</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <section id="demos" class="section">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Live demo pipeline</div>
+          <h2>GIF previews, play controls, and full-view evidence</h2>
+        </div>
+        <div class="cluster">
+          <button class="chip active" data-filter="all">All</button>
+          <button class="chip" data-filter="attack">Attack</button>
+          <button class="chip" data-filter="detection">Detection</button>
+          <button class="chip" data-filter="monitoring">Monitoring</button>
+          <button class="mini" id="playAll">Play all</button>
+          <button class="mini alt" id="pauseAll">Turn all off</button>
+        </div>
+      </div>
+
+      <div class="cards demos">
+        <article class="card glass" data-category="attack">
+          <div class="card-top"><span class="badge attack">Attack</span><button class="mini" data-open-modal="modalAttack">Explain</button></div>
+          <h3>Hydra SSH brute force</h3>
+          <p>Short inline GIF for recruiter preview, with MP4-ready pipeline documented in the repo.</p>
+          <div class="demo-stage paused" id="demoAttack" data-gif="media/gifs/bruteforce-demo.gif" data-poster="media/screenshots/hydra-terminal-placeholder.png">
+            <img class="demo-media" src="media/screenshots/hydra-terminal-placeholder.png" alt="Hydra demo">
+            <div class="demo-overlay">Demo paused</div>
+          </div>
+          <div class="actions">
+            <button class="mini" data-demo-target="demoAttack" data-default-label="Play demo">Play demo</button>
+            <button class="mini alt" data-open-lightbox="Hydra SSH brute force" data-lightbox-src="media/gifs/bruteforce-demo.gif">Full view</button>
+          </div>
+        </article>
+
+        <article class="card glass" data-category="detection">
+          <div class="card-top"><span class="badge detection">Detection</span><button class="mini" data-open-modal="modalMitre">MITRE</button></div>
+          <h3>Wazuh alert drill-down</h3>
+          <p>Good for live walkthroughs of rule context, event details, and triage steps.</p>
+          <div class="demo-stage paused" id="demoDetection" data-gif="media/gifs/detection-review.gif" data-poster="media/screenshots/wazuh-alerts-placeholder.png">
+            <img class="demo-media" src="media/screenshots/wazuh-alerts-placeholder.png" alt="Wazuh demo">
+            <div class="demo-overlay">Demo paused</div>
+          </div>
+          <div class="actions">
+            <button class="mini" data-demo-target="demoDetection" data-default-label="Play demo">Play demo</button>
+            <button class="mini alt" data-open-lightbox="Wazuh alert drill-down" data-lightbox-src="media/gifs/detection-review.gif">Full view</button>
+          </div>
+        </article>
+
+        <article class="card glass" data-category="monitoring">
+          <div class="card-top"><span class="badge monitoring">Monitoring</span><button class="mini" data-open-modal="modalPipeline">Pipeline</button></div>
+          <h3>Prometheus and Nagios overview</h3>
+          <p>Use this to show targets, graphs, alert states, and host reachability as operational context.</p>
+          <div class="demo-stage paused" id="demoMonitoring" data-gif="media/gifs/monitoring-demo.gif" data-poster="media/screenshots/prometheus-overview-placeholder.png">
+            <img class="demo-media" src="media/screenshots/prometheus-overview-placeholder.png" alt="Monitoring demo">
+            <div class="demo-overlay">Demo paused</div>
+          </div>
+          <div class="actions">
+            <button class="mini" data-demo-target="demoMonitoring" data-default-label="Play demo">Play demo</button>
+            <button class="mini alt" data-open-lightbox="Prometheus and Nagios overview" data-lightbox-src="media/gifs/monitoring-demo.gif">Full view</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="charts" class="section">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Metrics section</div>
+          <h2>Embedded Prometheus-style charts</h2>
+        </div>
+        <p class="section-copy">These SVG charts are lightweight, GitHub Pages friendly, and can be replaced later with screenshots or exports from your real dashboards.</p>
+      </div>
+      <div class="cards charts">
+        <article class="card glass">
+          <h3>CPU usage during brute-force window</h3>
+          <img src="media/charts/cpu-usage.svg" alt="CPU usage chart" class="chart">
+        </article>
+        <article class="card glass">
+          <h3>Alert timeline</h3>
+          <img src="media/charts/alerts-timeline.svg" alt="Alert timeline chart" class="chart">
+        </article>
+        <article class="card glass">
+          <h3>Network traffic pattern</h3>
+          <img src="media/charts/network-traffic.svg" alt="Network traffic chart" class="chart">
+        </article>
+      </div>
+    </section>
+
+    <section id="mitre" class="section">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">MITRE ATT&CK</div>
+          <h2>Technique mapping recruiters and interviewers recognize quickly</h2>
+        </div>
+        <p class="section-copy">This section translates tool output into a standard defensive language. It helps move the discussion from dashboards to analyst reasoning.</p>
+      </div>
+      <div class="cards">
+        <article class="card glass">
+          <span class="badge attack">T1110</span>
+          <h3>Brute Force</h3>
+          <p>Hydra against SSH on Ubuntu. Logged in auth sources, surfaced in Wazuh, validated in network evidence.</p>
+        </article>
+        <article class="card glass">
+          <span class="badge detection">T1595</span>
+          <h3>Active Scanning</h3>
+          <p>Nmap reconnaissance across the lab to enumerate hosts and services before exploitation.</p>
+        </article>
+        <article class="card glass">
+          <span class="badge monitoring">T1595.003</span>
+          <h3>Wordlist Scanning</h3>
+          <p>Gobuster-based web enumeration tied to web logs, traffic evidence, and service monitoring context.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="reports" class="section">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Case-study reporting</div>
+          <h2>Incident reports written like real deliverables</h2>
+        </div>
+        <p class="section-copy">Each report connects attacker activity, evidence sources, analyst assessment, and lessons learned. The full markdown reports live in the repository.</p>
+      </div>
+      <div class="cards">
+        <article class="card glass report">
+          <h3>Incident 01 · SSH brute force</h3>
+          <p>Controlled Hydra attack against Ubuntu SSH with host, network, uptime, and metrics correlation.</p>
+          <a class="text-link" href="../docs/incident-reports/01-ssh-bruteforce-case-study.md">Open report</a>
+        </article>
+        <article class="card glass report">
+          <h3>Incident 02 · Nmap reconnaissance</h3>
+          <p>Pre-attack active scanning documented as suspicious discovery activity and early warning signal.</p>
+          <a class="text-link" href="../docs/incident-reports/02-recon-case-study.md">Open report</a>
+        </article>
+        <article class="card glass report">
+          <h3>Incident 03 · Web enumeration</h3>
+          <p>Gobuster-based directory scanning tied to web logs, network observations, and performance context.</p>
+          <a class="text-link" href="../docs/incident-reports/03-web-enum-case-study.md">Open report</a>
+        </article>
+      </div>
+    </section>
+
+    <section id="qa" class="section">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">SOC analyst interview prep</div>
+          <h2>Questions I can answer directly from the lab</h2>
+        </div>
+        <p class="section-copy">Use this section as a rehearsal tool before interviews. The repo also includes a longer markdown Q&A file.</p>
+      </div>
+      <div class="accordion glass">
+        <details open>
+          <summary>Why did you use both Nagios and Prometheus?</summary>
+          <p>Nagios gives clear service-state awareness, while Prometheus adds time-series metrics and trend analysis. Together they show operational maturity beyond simple up/down checks.</p>
+        </details>
+        <details>
+          <summary>How do you explain the value of correlation?</summary>
+          <p>Correlation reduces blind spots. If logs, network evidence, service health, and metrics all support the same conclusion, analyst confidence is much higher.</p>
+        </details>
+        <details>
+          <summary>Which MITRE techniques does the lab demonstrate?</summary>
+          <p>The clearest mappings are T1110 for brute force, T1595 for active scanning, and T1595.003 for wordlist scanning.</p>
+        </details>
+        <details>
+          <summary>What is the strongest story in the portfolio?</summary>
+          <p>The SSH brute-force scenario because it is easy to understand, realistic, and demonstrates attack simulation, detections, network context, and monitoring in one chain.</p>
+        </details>
+      </div>
+    </section>
+
+    <section id="domain" class="section">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Custom domain</div>
+          <h2>vincentita.dev</h2>
+        </div>
+        <p class="section-copy">The site includes a ready-to-use CNAME file so the GitHub Pages deployment can be upgraded from a repo URL to a polished portfolio domain.</p>
+      </div>
+      <div class="cards">
+        <article class="card glass">
+          <h3>Already included</h3>
+          <pre class="code-block">site/CNAME
+vincentita.dev</pre>
+        </article>
+        <article class="card glass">
+          <h3>Deployment steps</h3>
+          <ol>
+            <li>Push the repository to GitHub.</li>
+            <li>Enable GitHub Pages.</li>
+            <li>Set the custom domain to vincentita.dev.</li>
+            <li>Point DNS records to GitHub Pages.</li>
+            <li>Enable HTTPS after DNS propagates.</li>
+          </ol>
+        </article>
+      </div>
+    </section>
+
+    <section class="section contact" id="contact">
+      <div class="glass contact-card">
+        <div>
+          <div class="eyebrow">Next step</div>
+          <h2>Ready to show this live in interviews</h2>
+          <p>Replace the placeholders with your real screenshots, GIFs, and CV PDF, then publish with the custom domain for a premium finish.</p>
+        </div>
+        <div class="contact-actions">
+          <a class="btn primary" href="https://github.com/vincetita" target="_blank" rel="noreferrer">View GitHub</a>
+          <a class="btn secondary" href="../docs/Vincent-Tita-CV-PLACEHOLDER.txt">Open CV placeholder</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal-shell" id="modalAttack" aria-hidden="true">
+    <div class="modal glass">
+      <button class="close" data-close-modal>&times;</button>
+      <h3>Explain this attack</h3>
+      <p>The brute-force story is your strongest interview demo. Start with Hydra on Kali, move to Ubuntu authentication failures, show Wazuh alerting, confirm network context in Security Onion, then close by showing SSH service health in Nagios and resource trends in Prometheus.</p>
+    </div>
+  </div>
+
+  <div class="modal-shell" id="modalMitre" aria-hidden="true">
+    <div class="modal glass">
+      <button class="close" data-close-modal>&times;</button>
+      <h3>MITRE mapping</h3>
+      <p>Translate the scenarios into ATT&CK language: T1110 for brute force, T1595 for active scanning, and T1595.003 for wordlist scanning. This shows detection literacy, not just dashboard familiarity.</p>
+    </div>
+  </div>
+
+  <div class="modal-shell" id="modalPipeline" aria-hidden="true">
+    <div class="modal glass">
+      <button class="close" data-close-modal>&times;</button>
+      <h3>Live demo recording pipeline</h3>
+      <p>Record a high-quality MP4 master with OBS or ShareX, trim it, then export a short GIF preview using the ffmpeg palette pipeline in <code>scripts/demo-pipeline/</code>. Use GIF for previews and MP4 for full walkthroughs.</p>
+    </div>
+  </div>
+
+  <div class="modal-shell" id="lightbox" aria-hidden="true">
+    <div class="modal lightbox glass">
+      <button class="close" data-close-modal>&times;</button>
+      <h3 id="lightboxTitle">Preview</h3>
+      <img id="lightboxImage" src="" alt="Lightbox preview">
+    </div>
+  </div>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>

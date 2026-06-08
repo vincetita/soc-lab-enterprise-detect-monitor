@@ -1,0 +1,88 @@
+flowchart LR
+    %% ======================================================
+    %% ENTERPRISE SOC LAB FULL STACK ARCHITECTURE
+    %% ======================================================
+
+    subgraph HOST["VMware Workstation Host"]
+        NAT["Win11 NAT / Internet Updates<br/>192.168.20.133"]
+    end
+
+    subgraph SOCNET["SOC Lab Network<br/>192.168.117.0/24"]
+
+        KALI["Kali Linux<br/>192.168.117.129<br/><b>Attacker VM</b><br/>Hydra · Nmap · Gobuster"]
+
+        UBUNTU["Ubuntu Node<br/>192.168.117.30<br/><b>Web / SSH Target + Monitoring Host</b><br/>Apache · SSH"]
+
+        DC01["DC01<br/>192.168.117.130<br/><b>Windows Server 2025</b><br/>AD DS · DNS · Kerberos"]
+
+        WIN11["Win11Client<br/>192.168.117.100<br/><b>Domain-joined Endpoint</b>"]
+
+        WAZUH["Wazuh Manager<br/>192.168.117.50<br/><b>SIEM / Endpoint Telemetry</b><br/>Rules · Alerts · MITRE"]
+
+        SO["Security Onion<br/>192.168.117.10<br/><b>Network Detection</b><br/>Suricata · Zeek · PCAP · Hunt"]
+
+        subgraph OBS["Observability Stack on Ubuntu<br/>192.168.117.30"]
+            NAGIOS["Nagios<br/><b>Availability Monitoring</b><br/>Host / Service UP-DOWN"]
+            PROM["Prometheus<br/>192.168.117.30:9090<br/><b>Metrics Collection</b>"]
+            GRAF["Grafana<br/>192.168.117.30:3000<br/><b>Dashboards / Visualization</b>"]
+        end
+    end
+
+    %% Attack Paths
+    KALI -->|"Hydra SSH brute force"| UBUNTU
+    KALI -->|"Nmap recon"| UBUNTU
+    KALI -->|"Nmap recon"| DC01
+    KALI -->|"Nmap recon"| WIN11
+    KALI -->|"Gobuster web enum"| UBUNTU
+
+    %% Windows / AD Activity
+    WIN11 -->|"Domain auth / Kerberos"| DC01
+    WIN11 -->|"SMB / lateral movement simulation"| DC01
+
+    %% Telemetry to Wazuh
+    UBUNTU -->|"auth.log · Apache logs · Linux agent"| WAZUH
+    DC01 -->|"Windows Security Events<br/>4624 · 4625 · 4768 · 5140 · 5145"| WAZUH
+    WIN11 -->|"Windows endpoint telemetry"| WAZUH
+
+    %% Network visibility
+    SOCNET -. "Mirrored / observed lab traffic" .-> SO
+    KALI -. "attack traffic" .-> SO
+    UBUNTU -. "HTTP / SSH traffic" .-> SO
+    DC01 -. "Kerberos / SMB / DNS traffic" .-> SO
+    WIN11 -. "endpoint traffic" .-> SO
+
+    %% Observability
+    NAGIOS -->|"service checks"| UBUNTU
+    NAGIOS -->|"host/service checks"| DC01
+    NAGIOS -->|"host/service checks"| WIN11
+    NAGIOS -->|"dashboard/service checks"| WAZUH
+    NAGIOS -->|"sensor/platform checks"| SO
+
+    PROM -->|"metrics scrape"| UBUNTU
+    PROM -->|"Windows exporter metrics"| WIN11
+    PROM -->|"system metrics"| DC01
+    GRAF -->|"visualizes Prometheus metrics"| PROM
+
+    %% Analyst workflow
+    WAZUH -->|"endpoint alerts + MITRE mapping"| ANALYST["SOC Analyst<br/><b>Incident Timeline & Case Study</b>"]
+    SO -->|"network evidence + PCAP/Hunt"| ANALYST
+    GRAF -->|"trend / dashboard evidence"| ANALYST
+    NAGIOS -->|"availability validation"| ANALYST
+
+    %% Internet / updates
+    NAT -->|"controlled updates / package downloads"| SOCNET
+
+    %% Styling
+    classDef attacker fill:#3b0d16,stroke:#ff5570,color:#fff,stroke-width:2px;
+    classDef endpoint fill:#10223d,stroke:#00d4ff,color:#fff,stroke-width:2px;
+    classDef detect fill:#172044,stroke:#7c5cff,color:#fff,stroke-width:2px;
+    classDef observe fill:#10331f,stroke:#35e88f,color:#fff,stroke-width:2px;
+    classDef analyst fill:#2a220c,stroke:#ffc857,color:#fff,stroke-width:2px;
+    classDef network fill:#07111f,stroke:#ffffff55,color:#fff,stroke-width:1px;
+
+    class KALI attacker;
+    class UBUNTU,DC01,WIN11 endpoint;
+    class WAZUH,SO detect;
+    class NAGIOS,PROM,GRAF observe;
+    class ANALYST analyst;
+    class SOCNET,HOST,OBS,NAT network;

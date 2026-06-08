@@ -1,0 +1,12 @@
+title: Reconnaissance Activity
+id: soc-002
+status: experimental
+description: Detects command-line reconnaissance activity.
+detection:
+  selection:
+    CommandLine|contains:
+      - nmap
+  condition: selection
+level: medium
+tags:
+  - attack.t1046

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="280" viewBox="0 0 900 280">
+<rect width="900" height="280" rx="24" fill="#08101b"/>
+<text x="40" y="48" fill="#EAF4FF" font-family="Inter, Arial" font-size="24" font-weight="700">Incident Timeline Placeholder</text>
+<text x="40" y="78" fill="#AEBED8" font-family="Inter, Arial" font-size="16">Attack → Logs → Detection → Monitoring</text>
+<line x1="80" y1="160" x2="820" y2="160" stroke="#6DD7FF" stroke-width="4"/>
+<circle cx="120" cy="160" r="16" fill="#FF8FA3"/><text x="86" y="205" fill="#EAF4FF" font-family="Inter, Arial" font-size="14">Attack</text><circle cx="320" cy="160" r="16" fill="#A78BFF"/><text x="286" y="205" fill="#EAF4FF" font-family="Inter, Arial" font-size="14">Host Logs</text><circle cx="540" cy="160" r="16" fill="#82FFC8"/><text x="506" y="205" fill="#EAF4FF" font-family="Inter, Arial" font-size="14">Detection</text><circle cx="760" cy="160" r="16" fill="#6DD7FF"/><text x="726" y="205" fill="#EAF4FF" font-family="Inter, Arial" font-size="14">Monitoring</text></svg>

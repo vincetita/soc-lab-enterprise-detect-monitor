@@ -1,0 +1,11 @@
+<group name="custom_bruteforce">
+  <rule id="100500" level="12">
+    <if_sid>5710</if_sid>
+    <frequency>5</frequency>
+    <timeframe>60</timeframe>
+    <description>Custom SSH brute force detected</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+  </rule>
+</group>
