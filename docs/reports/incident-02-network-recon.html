@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>incident-02-network-recon</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1 id="incident-02-network-reconnaissance-detection">Incident 02 —
+Network Reconnaissance Detection</h1>
+<p><strong>Incident ID:</strong> SOC-IR-002<br />
+<strong>Classification:</strong> Reconnaissance / Discovery
+Activity<br />
+<strong>Severity:</strong> Medium-High<br />
+<strong>MITRE ATT&amp;CK:</strong> T1046 — Network Service
+Discovery<br />
+<strong>Analyst:</strong> Vincent Takwi<br />
+<strong>Lab Environment:</strong> Enterprise SOC Lab<br />
+<strong>Date:</strong> [Insert Date]</p>
+<hr />
+<h1 id="executive-summary">Executive Summary</h1>
+<p>A controlled reconnaissance simulation was executed from the attacker
+host (<strong>Kali Linux - 192.168.117.129</strong>) against multiple
+enterprise SOC assets to validate network detection, host telemetry
+visibility, SIEM detection coverage, and cross-platform investigation
+workflows.</p>
+<p>The attacker performed active network enumeration using Nmap to
+identify:</p>
+<ul>
+<li>exposed services</li>
+<li>host fingerprints</li>
+<li>open ports</li>
+<li>operating system characteristics</li>
+<li>reachable enterprise infrastructure</li>
+</ul>
+<p>The reconnaissance activity was successfully observed across:</p>
+<ul>
+<li>Security Onion (network detection)</li>
+<li>Wazuh (endpoint telemetry)</li>
+<li>Windows logs</li>
+<li>Linux telemetry</li>
+<li>Prometheus infrastructure monitoring</li>
+<li>Grafana observability dashboards</li>
+</ul>
+<p>This exercise validates early-stage attack detection before
+exploitation occurs.</p>
+<hr />
+<h1 id="incident-scope">Incident Scope</h1>
+<h2 id="attacker">Attacker</h2>
+<table>
+<thead>
+<tr>
+<th>Asset</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hostname</td>
+<td>Kali</td>
+</tr>
+<tr>
+<td>IP Address</td>
+<td>192.168.117.129</td>
+</tr>
+<tr>
+<td>Role</td>
+<td>Red Team Simulation Node</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="target-assets">Target Assets</h2>
+<table>
+<thead>
+<tr>
+<th>Host</th>
+<th>IP</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Security Onion</td>
+<td>192.168.117.10</td>
+<td>NDR / SOC Platform</td>
+</tr>
+<tr>
+<td>Ubuntu Node</td>
+<td>192.168.117.30</td>
+<td>Monitoring / Web / SSH</td>
+</tr>
+<tr>
+<td>Wazuh Manager</td>
+<td>192.168.117.50</td>
+<td>SIEM</td>
+</tr>
+<tr>
+<td>Win11 Client</td>
+<td>192.168.117.100</td>
+<td>Domain Workstation</td>
+</tr>
+<tr>
+<td>DC01</td>
+<td>192.168.117.130</td>
+<td>Domain Controller</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1 id="objective">Objective</h1>
+<p>Validate SOC capability to detect pre-attack discovery behavior.</p>
+<p>Detection goals:</p>
+<ul>
+<li>identify hostile scanning activity</li>
+<li>map attacker IP</li>
+<li>observe targeted hosts</li>
+<li>confirm NDR detection</li>
+<li>validate SIEM visibility</li>
+<li>document analyst triage workflow</li>
+</ul>
+<hr />
+<h1 id="attack-preparation">Attack Preparation</h1>
+<p>Reconnaissance commonly precedes exploitation.</p>
+<p>Adversaries use scanning to:</p>
+<ul>
+<li>locate exposed services</li>
+<li>fingerprint systems</li>
+<li>identify weak targets</li>
+<li>map network topology</li>
+</ul>
+<p>This simulation reflects realistic pre-compromise attacker
+behavior.</p>
+<hr />
+<h1 id="attack-execution">Attack Execution</h1>
+<h2 id="nmap-service-discovery">Nmap Service Discovery</h2>
+<p>Command executed:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nmap</span> <span class="at">-sS</span> <span class="at">-sV</span> <span class="at">-O</span> 192.168.117.10 192.168.117.30 192.168.117.50 192.168.117.100 192.168.117.130</span></code></pre></div>
+<p>Explanation:</p>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-sS</td>
+<td>SYN scan</td>
+</tr>
+<tr>
+<td>-sV</td>
+<td>Service version detection</td>
+</tr>
+<tr>
+<td>-O</td>
+<td>OS fingerprinting</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1 id="expected-recon-findings">Expected Recon Findings</h1>
+<p>Examples:</p>
+<pre class="text"><code>22/tcp open ssh
+80/tcp open http
+443/tcp open https
+1514/tcp open wazuh
+5601/tcp open dashboard
+3389/tcp open ms-wbt-server
+445/tcp open microsoft-ds
+53/tcp open domain
+88/tcp open kerberos</code></pre>
+<p>Evidence:</p>
+<pre class="text"><code>attacks/recon/screenshots/nmap-recon-terminal.png
+attacks/recon/logs/nmap-recon.txt
+attacks/recon/gifs/recon-demo.gif
+site/media/gifs/recon-demo.gif</code></pre>
+<hr />
+<h1 id="timeline">Timeline</h1>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Event</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>21:00</td>
+<td>Kali initiates reconnaissance</td>
+</tr>
+<tr>
+<td>21:01</td>
+<td>Security Onion detects scan activity</td>
+</tr>
+<tr>
+<td>21:02</td>
+<td>Linux telemetry reflects connections</td>
+</tr>
+<tr>
+<td>21:03</td>
+<td>Windows hosts receive probes</td>
+</tr>
+<tr>
+<td>21:04</td>
+<td>Wazuh logs suspicious telemetry</td>
+</tr>
+<tr>
+<td>21:05</td>
+<td>Analyst triage begins</td>
+</tr>
+<tr>
+<td>21:07</td>
+<td>Cross-tool correlation completed</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1 id="evidence-collection">Evidence Collection</h1>
+<hr />
+<h2 id="attacker-evidence">1. Attacker Evidence</h2>
+<p>Recon executed from Kali.</p>
+<p>Command:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nmap</span> <span class="at">-sS</span> <span class="at">-sV</span> <span class="at">-O</span> 192.168.117.10 192.168.117.30 192.168.117.50 192.168.117.100 192.168.117.130</span></code></pre></div>
+<p>Evidence:</p>
+<pre class="text"><code>attacks/recon/screenshots/nmap-recon-terminal.png</code></pre>
+<p>Assessment:</p>
+<p>Confirms attacker execution source.</p>
+<hr />
+<h2 id="security-onion-detection">2. Security Onion Detection</h2>
+<p>Security Onion successfully detected network scanning behavior.</p>
+<p>Analyst query:</p>
+<pre class="text"><code>source.ip:192.168.117.129</code></pre>
+<p>Possible indicators:</p>
+<ul>
+<li>SYN scan bursts</li>
+<li>multiple host probing</li>
+<li>rapid port connection attempts</li>
+</ul>
+<p>Evidence:</p>
+<pre class="text"><code>screenshots/security-onion/recon-alerts.png
+detections/security-onion/screenshots/recon-detection.png</code></pre>
+<p>Assessment:</p>
+<p>NDR detection succeeded.</p>
+<hr />
+<h2 id="wazuh-detection">3. Wazuh Detection</h2>
+<p>Endpoint telemetry observed suspicious connection activity.</p>
+<p>Search:</p>
+<pre class="text"><code>192.168.117.129</code></pre>
+<p>Custom rule (optional):</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode xml"><code class="sourceCode xml"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">rule</span> <span class="ot">id=</span><span class="st">&quot;100101&quot;</span> <span class="ot">level=</span><span class="st">&quot;10&quot;</span>&gt;</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">match</span>&gt;nmap&lt;/<span class="kw">match</span>&gt;</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">description</span>&gt;Custom SOC Lab Nmap Recon Detection&lt;/<span class="kw">description</span>&gt;</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">mitre</span>&gt;</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">id</span>&gt;T1046&lt;/<span class="kw">id</span>&gt;</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">mitre</span>&gt;</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">rule</span>&gt;</span></code></pre></div>
+<p>Evidence:</p>
+<pre class="text"><code>detections/wazuh/screenshots/wazuh-recon-detection.png
+detections/wazuh/gifs/wazuh-recon-detection.gif
+detections/wazuh/rules/recon_rule.xml</code></pre>
+<p>Assessment:</p>
+<p>SIEM telemetry confirmed reconnaissance visibility.</p>
+<hr />
+<h2 id="windows-evidence">4. Windows Evidence</h2>
+<p>Windows hosts received network probing.</p>
+<p>Potential telemetry:</p>
+<ul>
+<li>connection attempts</li>
+<li>firewall logs</li>
+<li>Windows Defender events</li>
+<li>event correlation</li>
+</ul>
+<p>Evidence:</p>
+<pre class="text"><code>detections/wazuh/screenshots/wazuh-windows-events.png
+detections/wazuh/screenshots/wazuh-dc01-telemetry.png</code></pre>
+<p>Assessment:</p>
+<p>Recon activity touched enterprise Windows assets.</p>
+<hr />
+<h2 id="linux-evidence">5. Linux Evidence</h2>
+<p>Ubuntu network interaction observed.</p>
+<p>Useful commands:</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ss <span class="at">-tunap</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> journalctl <span class="at">-xe</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tail <span class="at">-f</span> /var/log/auth.log</span></code></pre></div>
+<p>Evidence:</p>
+<pre class="text"><code>attacks/recon/screenshots/linux-recon-telemetry.png</code></pre>
+<p>Assessment:</p>
+<p>Host telemetry supports attack timeline.</p>
+<hr />
+<h2 id="prometheus-metrics">6. Prometheus Metrics</h2>
+<p>Infrastructure remained healthy during reconnaissance.</p>
+<p>Query:</p>
+<pre class="text"><code>up</code></pre>
+<p>Evidence:</p>
+<pre class="text"><code>monitoring/prometheus/screenshots/prometheus-ui.png</code></pre>
+<p>Assessment:</p>
+<p>No resource exhaustion.</p>
+<hr />
+<h2 id="grafana-visualization">7. Grafana Visualization</h2>
+<p>Dashboards visualized:</p>
+<ul>
+<li>host uptime</li>
+<li>CPU</li>
+<li>network behavior</li>
+<li>infrastructure health</li>
+</ul>
+<p>Evidence:</p>
+<pre class="text"><code>monitoring/grafana/screenshots/grafana-ui.png</code></pre>
+<p>Assessment:</p>
+<p>Improved analyst visibility.</p>
+<hr />
+<h2 id="nagios-availability">8. Nagios Availability</h2>
+<p>Nagios verified services remained reachable.</p>
+<p>Observed:</p>
+<ul>
+<li>DC01 UP</li>
+<li>Ubuntu UP</li>
+<li>Wazuh UP</li>
+<li>Win11 UP</li>
+</ul>
+<p>Evidence:</p>
+<pre class="text"><code>monitoring/nagios/screenshots/nagios-ui.png</code></pre>
+<p>Assessment:</p>
+<p>Recon caused no service disruption.</p>
+<hr />
+<h1 id="correlation-analysis">Correlation Analysis</h1>
+<p>Evidence chain:</p>
+<pre class="text"><code>Kali Nmap Scan
+      ↓
+Security Onion detects SYN scan behavior
+      ↓
+Target Linux/Windows telemetry receives probes
+      ↓
+Wazuh logs suspicious activity
+      ↓
+Prometheus confirms system stability
+      ↓
+Grafana visualizes operational state
+      ↓
+Analyst investigation timeline completed</code></pre>
+<p>Evidence:</p>
+<pre class="text"><code>detections/correlation/screenshots/multi-tool-evidence.png
+detections/correlation/screenshots/correlation-timeline.png
+detections/correlation/screenshots/recon-correlation.png
+detections/correlation/gifs/cross-tool-correlation.gif</code></pre>
+<hr />
+<h1 id="root-cause">Root Cause</h1>
+<p>Intentional internal attack simulation.</p>
+<p>Purpose:</p>
+<p>Reconnaissance detection validation.</p>
+<p>No unauthorized compromise occurred.</p>
+<hr />
+<h1 id="impact-assessment">Impact Assessment</h1>
+<h2 id="confidentiality">Confidentiality</h2>
+<p>No breach.</p>
+<hr />
+<h2 id="integrity">Integrity</h2>
+<p>No modification.</p>
+<hr />
+<h2 id="availability">Availability</h2>
+<p>No interruption.</p>
+<hr />
+<h2 id="detection-capability">Detection Capability</h2>
+<p>Strong.</p>
+<hr />
+<h1 id="threat-analysis">Threat Analysis</h1>
+<p>Reconnaissance is a critical early warning signal.</p>
+<p>Real adversaries often perform discovery before:</p>
+<ul>
+<li>brute force</li>
+<li>exploitation</li>
+<li>privilege escalation</li>
+<li>lateral movement</li>
+<li>credential attacks</li>
+</ul>
+<p>Early detection materially improves defensive posture.</p>
+<hr />
+<h1 id="analyst-findings">Analyst Findings</h1>
+<p>Findings:</p>
+<ul>
+<li>Nmap activity clearly visible</li>
+<li>attacker source identified</li>
+<li>NDR detection effective</li>
+<li>SIEM telemetry supportive</li>
+<li>Windows + Linux evidence aligned</li>
+<li>observability stack remained healthy</li>
+</ul>
+<hr />
+<h1 id="recommendations">Recommendations</h1>
+<p>Improve detection posture:</p>
+<ul>
+<li>alert on aggressive port scanning</li>
+<li>threshold scan burst detection</li>
+<li>geolocation enrichment</li>
+<li>automated recon alert triage</li>
+<li>Sigma rule integration</li>
+<li>correlation playbook automation</li>
+</ul>
+<hr />
+<h1 id="conclusion">Conclusion</h1>
+<p>The SOC successfully detected reconnaissance behavior before
+exploitation.</p>
+<p>This demonstrates:</p>
+<ul>
+<li>layered monitoring maturity</li>
+<li>practical SOC investigation workflow</li>
+<li>early threat detection capability</li>
+<li>multi-tool evidence correlation</li>
+<li>realistic enterprise analyst methodology</li>
+</ul>
+<hr />
+<h1 id="related-artifacts">Related Artifacts</h1>
+<p>Attack:</p>
+<pre class="text"><code>attacks/recon/</code></pre>
+<p>Detection:</p>
+<pre class="text"><code>detections/wazuh/
+detections/security-onion/
+detections/correlation/</code></pre>
+<p>Monitoring:</p>
+<pre class="text"><code>monitoring/nagios/
+monitoring/prometheus/
+monitoring/grafana/</code></pre>
+<p>Media:</p>
+<pre class="text"><code>site/media/gifs/recon-demo.gif</code></pre>
+<hr />
+</body>
+</html>

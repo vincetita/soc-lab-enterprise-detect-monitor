@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>incident-01-ssh-bruteforce</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1 id="incident-01-ssh-brute-force-attack-detection">Incident 01 — SSH
+Brute Force Attack Detection</h1>
+<p><strong>Incident ID:</strong> SOC-IR-001<br />
+<strong>Classification:</strong> Brute Force Authentication Attack<br />
+<strong>Severity:</strong> High<br />
+<strong>MITRE ATT&amp;CK:</strong> T1110 — Brute Force<br />
+<strong>Analyst:</strong> Vincent Takwi<br />
+<strong>Lab Environment:</strong> Enterprise SOC Lab<br />
+<strong>Date:</strong> [Insert Date]</p>
+<hr />
+<h1 id="executive-summary">Executive Summary</h1>
+<p>A controlled SSH brute-force attack was executed from the designated
+attacker host (<strong>Kali Linux - 192.168.117.129</strong>) against
+the Ubuntu monitoring server (<strong>Ubuntu Node -
+192.168.117.30</strong>) to validate enterprise monitoring, detection
+engineering, and cross-tool correlation capabilities.</p>
+<p>The attack simulated repeated password guessing attempts using Hydra
+against the SSH service exposed on port 22.</p>
+<p>The activity was successfully detected across multiple defensive
+layers:</p>
+<ul>
+<li>Linux authentication logs</li>
+<li>Wazuh SIEM</li>
+<li>Security Onion NDR</li>
+<li>Nagios availability monitoring</li>
+<li>Prometheus metrics collection</li>
+<li>Grafana visualization dashboards</li>
+</ul>
+<p>This exercise demonstrates practical blue-team incident detection,
+investigation, and evidence correlation.</p>
+<hr />
+<h1 id="incident-scope">Incident Scope</h1>
+<h2 id="source-attacker">Source (Attacker)</h2>
+<table>
+<thead>
+<tr>
+<th>Asset</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hostname</td>
+<td>Kali</td>
+</tr>
+<tr>
+<td>IP Address</td>
+<td>192.168.117.129</td>
+</tr>
+<tr>
+<td>Role</td>
+<td>Attacker Simulation Node</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="target">Target</h2>
+<table>
+<thead>
+<tr>
+<th>Asset</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hostname</td>
+<td>Ubuntu Node</td>
+</tr>
+<tr>
+<td>IP Address</td>
+<td>192.168.117.30</td>
+</tr>
+<tr>
+<td>Service</td>
+<td>OpenSSH</td>
+</tr>
+<tr>
+<td>Port</td>
+<td>22</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="monitoring-systems">Monitoring Systems</h2>
+<table>
+<thead>
+<tr>
+<th>Platform</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Wazuh</td>
+<td>SIEM / Endpoint Detection</td>
+</tr>
+<tr>
+<td>Security Onion</td>
+<td>NDR / Network Detection</td>
+</tr>
+<tr>
+<td>Nagios</td>
+<td>Availability Monitoring</td>
+</tr>
+<tr>
+<td>Prometheus</td>
+<td>Metrics Collection</td>
+</tr>
+<tr>
+<td>Grafana</td>
+<td>Visualization / Correlation</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1 id="attack-objective">Attack Objective</h1>
+<p>Validate the SOC’s ability to:</p>
+<ul>
+<li>detect brute-force behavior</li>
+<li>identify attacker source</li>
+<li>capture authentication failures</li>
+<li>correlate endpoint + network telemetry</li>
+<li>verify host availability during attack</li>
+<li>visualize infrastructure behavior</li>
+</ul>
+<hr />
+<h1 id="attack-execution">Attack Execution</h1>
+<h2 id="pre-attack-verification">Pre-Attack Verification</h2>
+<h3 id="ssh-service-discovery">SSH Service Discovery</h3>
+<p>Attacker verified target SSH exposure.</p>
+<p>Command:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nmap</span> <span class="at">-p</span> 22 192.168.117.30</span></code></pre></div>
+<p>Result:</p>
+<pre class="text"><code>PORT   STATE SERVICE
+22/tcp open  ssh</code></pre>
+<p>Evidence:</p>
+<pre class="text"><code>attacks/brute-force/screenshots/ssh-port-check.png</code></pre>
+<hr />
+<h1 id="attack-execution-1">Attack Execution</h1>
+<p>Hydra was used to simulate repeated SSH password guessing.</p>
+<p>Command:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">hydra</span> <span class="at">-l</span> vincetita <span class="at">-P</span> ~/soc-lab/test-passwords.txt ssh://192.168.117.30 <span class="at">-V</span> <span class="at">-t</span> 4</span></code></pre></div>
+<p>Wordlist sample:</p>
+<pre class="text"><code>password
+admin
+ubuntu
+welcome
+test123
+Password123</code></pre>
+<p>Evidence:</p>
+<pre class="text"><code>attacks/brute-force/screenshots/hydra-terminal.png
+attacks/brute-force/logs/ssh-bruteforce.log
+attacks/brute-force/gifs/hydra-ssh-bruteforce.gif</code></pre>
+<hr />
+<h1 id="timeline">Timeline</h1>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Event</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>20:10</td>
+<td>SSH service confirmed reachable</td>
+</tr>
+<tr>
+<td>20:11</td>
+<td>Hydra brute-force attack launched</td>
+</tr>
+<tr>
+<td>20:11</td>
+<td>Ubuntu authentication failures logged</td>
+</tr>
+<tr>
+<td>20:12</td>
+<td>Security Onion detects suspicious SSH activity</td>
+</tr>
+<tr>
+<td>20:12</td>
+<td>Wazuh custom detection triggers</td>
+</tr>
+<tr>
+<td>20:13</td>
+<td>Analyst investigation begins</td>
+</tr>
+<tr>
+<td>20:15</td>
+<td>Correlation completed</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1 id="evidence-collection">Evidence Collection</h1>
+<hr />
+<h2 id="linux-authentication-logs">1. Linux Authentication Logs</h2>
+<p>Ubuntu captured repeated failed logons.</p>
+<p>Command:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tail <span class="at">-f</span> /var/log/auth.log</span></code></pre></div>
+<p>Observed:</p>
+<pre class="text"><code>Failed password for vincetita from 192.168.117.129
+Failed password for vincetita from 192.168.117.129
+Failed password for vincetita from 192.168.117.129</code></pre>
+<p>Evidence:</p>
+<pre class="text"><code>attacks/brute-force/screenshots/failed-logons.png</code></pre>
+<p>Assessment:</p>
+<p>This confirms direct brute-force interaction against the target
+host.</p>
+<hr />
+<h2 id="wazuh-detection">2. Wazuh Detection</h2>
+<p>Custom Wazuh detection logic successfully identified the attack.</p>
+<p>Custom Rule:</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode xml"><code class="sourceCode xml"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">rule</span> <span class="ot">id=</span><span class="st">&quot;100100&quot;</span> <span class="ot">level=</span><span class="st">&quot;12&quot;</span>&gt;</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">if_group</span>&gt;authentication_failed&lt;/<span class="kw">if_group</span>&gt;</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">match</span>&gt;Failed password&lt;/<span class="kw">match</span>&gt;</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">description</span>&gt;Custom SOC Lab SSH Brute Force Detection&lt;/<span class="kw">description</span>&gt;</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">mitre</span>&gt;</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">id</span>&gt;T1110&lt;/<span class="kw">id</span>&gt;</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">mitre</span>&gt;</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">rule</span>&gt;</span></code></pre></div>
+<p>Evidence:</p>
+<pre class="text"><code>detections/wazuh/screenshots/wazuh-bruteforce.png
+detections/wazuh/screenshots/wazuh-event-details.png
+detections/wazuh/gifs/wazuh-bruteforce-detection.gif
+detections/wazuh/rules/custom_bruteforce_rule.xml</code></pre>
+<p>Assessment:</p>
+<p>Endpoint telemetry correctly generated actionable detection
+alerts.</p>
+<hr />
+<h2 id="security-onion-detection">3. Security Onion Detection</h2>
+<p>Security Onion captured suspicious SSH network behavior.</p>
+<p>Investigation query:</p>
+<pre class="text"><code>source.ip:192.168.117.129</code></pre>
+<p>Evidence:</p>
+<pre class="text"><code>screenshots/security-onion/ssh-bruteforce-alerts.png</code></pre>
+<p>Assessment:</p>
+<p>Network detection independently validated hostile activity.</p>
+<hr />
+<h2 id="nagios-availability-monitoring">4. Nagios Availability
+Monitoring</h2>
+<p>Nagios confirmed infrastructure remained available during attack
+simulation.</p>
+<p>Services monitored:</p>
+<ul>
+<li>Ubuntu SSH</li>
+<li>Wazuh</li>
+<li>DC01</li>
+<li>Win11</li>
+</ul>
+<p>Evidence:</p>
+<pre class="text"><code>monitoring/nagios/screenshots/nagios-ui.png</code></pre>
+<p>Assessment:</p>
+<p>No availability degradation observed.</p>
+<hr />
+<h2 id="prometheus-metrics">5. Prometheus Metrics</h2>
+<p>Prometheus metrics showed system behavior during attack.</p>
+<p>Example query:</p>
+<pre class="text"><code>up</code></pre>
+<p>Evidence:</p>
+<pre class="text"><code>monitoring/prometheus/screenshots/prometheus-ui.png</code></pre>
+<p>Assessment:</p>
+<p>Host metrics remained stable.</p>
+<hr />
+<h2 id="grafana-visualization">6. Grafana Visualization</h2>
+<p>Grafana dashboards provided analyst-friendly visibility.</p>
+<p>Metrics observed:</p>
+<ul>
+<li>CPU</li>
+<li>Memory</li>
+<li>Host health</li>
+<li>uptime</li>
+</ul>
+<p>Evidence:</p>
+<pre class="text"><code>monitoring/grafana/screenshots/grafana-ui.png</code></pre>
+<p>Assessment:</p>
+<p>Visualization improved investigation context.</p>
+<hr />
+<h1 id="correlation-analysis">Correlation Analysis</h1>
+<p>Evidence correlation chain:</p>
+<pre class="text"><code>Kali Hydra Attack
+        ↓
+Ubuntu auth.log failures
+        ↓
+Security Onion SSH traffic alerts
+        ↓
+Wazuh custom brute-force detection
+        ↓
+Nagios uptime confirmation
+        ↓
+Prometheus metrics visibility
+        ↓
+Grafana analyst dashboard correlation</code></pre>
+<p>Evidence:</p>
+<pre class="text"><code>detections/correlation/screenshots/ssh-bruteforce-correlation.png
+detections/correlation/screenshots/multi-tool-evidence.png
+detections/correlation/gifs/cross-tool-correlation.gif</code></pre>
+<hr />
+<h1 id="root-cause">Root Cause</h1>
+<p>This activity was a deliberate internal red-team simulation.</p>
+<p>No real compromise occurred.</p>
+<p>Purpose:</p>
+<p>Detection validation.</p>
+<hr />
+<h1 id="impact-assessment">Impact Assessment</h1>
+<h2 id="confidentiality">Confidentiality</h2>
+<p>No breach.</p>
+<hr />
+<h2 id="integrity">Integrity</h2>
+<p>No modification.</p>
+<hr />
+<h2 id="availability">Availability</h2>
+<p>No service interruption.</p>
+<hr />
+<h2 id="detection-success">Detection Success</h2>
+<p>High confidence detection.</p>
+<hr />
+<h1 id="analyst-findings">Analyst Findings</h1>
+<p>Findings:</p>
+<ul>
+<li>SSH service exposed as expected</li>
+<li>authentication failures properly logged</li>
+<li>custom detection engineering worked</li>
+<li>independent NDR confirmation achieved</li>
+<li>observability stack remained operational</li>
+<li>analyst triage path validated</li>
+</ul>
+<hr />
+<h1 id="lessons-learned">Lessons Learned</h1>
+<p>Recommendations:</p>
+<ul>
+<li>implement SSH rate limiting</li>
+<li>enforce MFA for administrative access</li>
+<li>restrict SSH exposure</li>
+<li>expand brute-force correlation logic</li>
+<li>create automated containment playbooks</li>
+<li>integrate alert escalation workflows</li>
+</ul>
+<hr />
+<h1 id="conclusion">Conclusion</h1>
+<p>This exercise successfully validated enterprise-style brute-force
+detection and investigation workflows.</p>
+<p>The SOC stack demonstrated:</p>
+<ul>
+<li>layered defense visibility</li>
+<li>endpoint telemetry coverage</li>
+<li>network detection</li>
+<li>custom detection engineering</li>
+<li>observability resilience</li>
+<li>analyst investigation capability</li>
+</ul>
+<p>This reflects realistic SOC operational practice.</p>
+<hr />
+<h1 id="related-artifacts">Related Artifacts</h1>
+<p>Attack:</p>
+<pre class="text"><code>attacks/brute-force/</code></pre>
+<p>Detection:</p>
+<pre class="text"><code>detections/wazuh/
+detections/correlation/</code></pre>
+<p>Monitoring:</p>
+<pre class="text"><code>monitoring/nagios/
+monitoring/prometheus/
+monitoring/grafana/</code></pre>
+<p>Media:</p>
+<pre class="text"><code>site/media/gifs/bruteforce-demo.gif</code></pre>
+<hr />
+</body>
+</html>

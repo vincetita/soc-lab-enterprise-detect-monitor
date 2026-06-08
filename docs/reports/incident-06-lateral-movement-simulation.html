@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>incident-06-lateral-movement-simulation</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1 id="incident-06-lateral-movement-simulation">Incident 06 — Lateral
+Movement Simulation</h1>
+<p><strong>Incident ID:</strong> SOC-IR-006<br />
+<strong>Classification:</strong> Lateral Movement Activity<br />
+<strong>Severity:</strong> Critical<br />
+<strong>MITRE ATT&amp;CK:</strong> T1021 — Remote Services<br />
+<strong>Analyst:</strong> Vincent Takwi<br />
+<strong>Lab Environment:</strong> Enterprise SOC Lab<br />
+<strong>Date:</strong> [Insert Date]</p>
+<hr />
+<h1 id="executive-summary">Executive Summary</h1>
+<p>A controlled lateral movement simulation was executed within the
+Enterprise SOC Lab to validate enterprise visibility into SMB-based
+remote access activity between domain-connected systems.</p>
+<p>The simulation involved a Windows 11 workstation (<strong>Win11Client
+- 192.168.117.100</strong>) attempting authenticated remote
+administrative access to the Domain Controller (<strong>DC01 -
+192.168.117.130</strong>) using SMB administrative shares.</p>
+<p>The exercise successfully generated:</p>
+<ul>
+<li>Windows authentication telemetry</li>
+<li>SMB traffic visibility</li>
+<li>Active Directory authentication events</li>
+<li>Wazuh SIEM detections</li>
+<li>Security Onion network observations</li>
+<li>cross-platform evidence correlation</li>
+</ul>
+<p>This validates enterprise SOC capability to monitor east-west
+movement inside the network.</p>
+<hr />
+<h1 id="incident-scope">Incident Scope</h1>
+<h2 id="source-workstation">Source Workstation</h2>
+<table>
+<thead>
+<tr>
+<th>Asset</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hostname</td>
+<td>Win11Client</td>
+</tr>
+<tr>
+<td>IP Address</td>
+<td>192.168.117.100</td>
+</tr>
+<tr>
+<td>Domain</td>
+<td>corp.local</td>
+</tr>
+<tr>
+<td>Role</td>
+<td>Domain Workstation</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="target-system">Target System</h2>
+<table>
+<thead>
+<tr>
+<th>Asset</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hostname</td>
+<td>DC01</td>
+</tr>
+<tr>
+<td>IP Address</td>
+<td>192.168.117.130</td>
+</tr>
+<tr>
+<td>Service</td>
+<td>SMB / Administrative Shares</td>
+</tr>
+<tr>
+<td>Port</td>
+<td>445</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="monitoring-infrastructure">Monitoring Infrastructure</h2>
+<table>
+<thead>
+<tr>
+<th>Platform</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Wazuh</td>
+<td>SIEM</td>
+</tr>
+<tr>
+<td>Security Onion</td>
+<td>Network Detection</td>
+</tr>
+<tr>
+<td>DC01</td>
+<td>Domain Authentication</td>
+</tr>
+<tr>
+<td>Prometheus</td>
+<td>Metrics</td>
+</tr>
+<tr>
+<td>Grafana</td>
+<td>Visualization</td>
+</tr>
+<tr>
+<td>Nagios</td>
+<td>Availability Monitoring</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1 id="attack-objective">Attack Objective</h1>
+<p>Validate visibility into:</p>
+<ul>
+<li>internal SMB movement</li>
+<li>remote administrative access</li>
+<li>east-west traffic</li>
+<li>Windows authentication telemetry</li>
+<li>domain authentication activity</li>
+<li>lateral movement detection workflows</li>
+</ul>
+<hr />
+<h1 id="threat-context">Threat Context</h1>
+<p>Lateral movement is commonly used after initial compromise.</p>
+<p>Attackers often move laterally to:</p>
+<ul>
+<li>escalate privileges</li>
+<li>access domain controllers</li>
+<li>pivot between hosts</li>
+<li>deploy ransomware</li>
+<li>establish persistence</li>
+<li>exfiltrate data</li>
+</ul>
+<p>SMB administrative shares are frequently abused during enterprise
+attacks.</p>
+<hr />
+<h1 id="simulation-execution">Simulation Execution</h1>
+<h2 id="smb-administrative-share-access">SMB Administrative Share
+Access</h2>
+<p>Executed from Win11Client.</p>
+<p>Command:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>net use \\dc01\c$</span></code></pre></div>
+<p>Purpose:</p>
+<ul>
+<li>simulate authenticated SMB access</li>
+<li>trigger Windows authentication events</li>
+<li>generate lateral movement telemetry</li>
+</ul>
+<hr />
+<h2 id="optional-additional-enumeration">Optional Additional
+Enumeration</h2>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dir</span> \\dc01\c$</span></code></pre></div>
+<p>Purpose:</p>
+<ul>
+<li>simulate post-authentication access</li>
+<li>generate SMB file access telemetry</li>
+</ul>
+<hr />
+<h1 id="expected-events">Expected Events</h1>
+<h2 id="windows-security-events">Windows Security Events</h2>
+<table>
+<thead>
+<tr>
+<th>Event ID</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4624</td>
+<td>Successful logon</td>
+</tr>
+<tr>
+<td>4625</td>
+<td>Failed logon</td>
+</tr>
+<tr>
+<td>4648</td>
+<td>Explicit credentials used</td>
+</tr>
+<tr>
+<td>5140</td>
+<td>Shared object accessed</td>
+</tr>
+<tr>
+<td>5145</td>
+<td>Detailed SMB share access</td>
+</tr>
+<tr>
+<td>4768</td>
+<td>Kerberos ticket requested</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1 id="timeline">Timeline</h1>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Event</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>17:00</td>
+<td>SMB access initiated from Win11</td>
+</tr>
+<tr>
+<td>17:01</td>
+<td>DC01 receives authentication request</td>
+</tr>
+<tr>
+<td>17:01</td>
+<td>Windows security logs generated</td>
+</tr>
+<tr>
+<td>17:02</td>
+<td>Wazuh ingests telemetry</td>
+</tr>
+<tr>
+<td>17:02</td>
+<td>Security Onion observes SMB traffic</td>
+</tr>
+<tr>
+<td>17:03</td>
+<td>Analyst triage begins</td>
+</tr>
+<tr>
+<td>17:05</td>
+<td>Correlation investigation completed</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1 id="evidence-collection">Evidence Collection</h1>
+<hr />
+<h2 id="smb-access-execution">1. SMB Access Execution</h2>
+<p>Command:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>net use \\dc01\c$</span></code></pre></div>
+<p>Optional:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dir</span> \\dc01\c$</span></code></pre></div>
+<p>Evidence:</p>
+<pre class="text"><code>windows/win11client/screenshots/smb-admin-share.png
+windows/win11client/screenshots/lateral-movement-command.png</code></pre>
+<p>Assessment:</p>
+<p>Simulated authenticated remote access successfully executed.</p>
+<hr />
+<h2 id="domain-controller-telemetry">2. Domain Controller Telemetry</h2>
+<p>DC01 recorded authentication and SMB access events.</p>
+<p>Observed Event IDs:</p>
+<pre class="text"><code>4624
+5140
+5145</code></pre>
+<p>Example:</p>
+<pre class="text"><code>A network share object was accessed.</code></pre>
+<p>Key indicators:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Source IP</td>
+<td>192.168.117.100</td>
+</tr>
+<tr>
+<td>Share Name</td>
+<td>\*$</td>
+</tr>
+<tr>
+<td>Account</td>
+<td>corp</td>
+</tr>
+<tr>
+<td>Logon Type</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+<p>Evidence:</p>
+<pre class="text"><code>windows/dc01/screenshots/dc01-smb-events.png
+windows/dc01/screenshots/dc01-security-log-4624.png</code></pre>
+<p>Assessment:</p>
+<p>Domain controller visibility successfully captured remote access
+activity.</p>
+<hr />
+<h2 id="wazuh-detection">3. Wazuh Detection</h2>
+<p>Wazuh collected and correlated Windows telemetry.</p>
+<p>Dashboard searches:</p>
+<pre class="text"><code>4624
+5140
+5145</code></pre>
+<p>Additional query:</p>
+<pre class="text"><code>agent.name:dc01</code></pre>
+<p>Observed:</p>
+<ul>
+<li>SMB access activity</li>
+<li>authentication telemetry</li>
+<li>remote share access</li>
+</ul>
+<p>Evidence:</p>
+<pre class="text"><code>detections/wazuh/screenshots/wazuh-lateral-movement.png
+detections/wazuh/screenshots/wazuh-dc01-telemetry.png
+detections/wazuh/gifs/wazuh-lateral-movement.gif</code></pre>
+<p>Assessment:</p>
+<p>SIEM visibility into lateral movement operational.</p>
+<hr />
+<h2 id="security-onion-detection">4. Security Onion Detection</h2>
+<p>Security Onion observed SMB traffic between internal hosts.</p>
+<p>Queries:</p>
+<pre class="text"><code>smb</code></pre>
+<p>and:</p>
+<pre class="text"><code>source.ip:192.168.117.100</code></pre>
+<p>Observed:</p>
+<ul>
+<li>SMB sessions</li>
+<li>internal east-west traffic</li>
+<li>authentication exchanges</li>
+</ul>
+<p>Evidence:</p>
+<pre class="text"><code>screenshots/security-onion/lateral-movement-alerts.png</code></pre>
+<p>Assessment:</p>
+<p>Network detection successfully captured lateral movement
+behavior.</p>
+<hr />
+<h2 id="prometheus-metrics">5. Prometheus Metrics</h2>
+<p>Infrastructure metrics remained stable during simulation.</p>
+<p>Query:</p>
+<pre class="text"><code>up</code></pre>
+<p>Evidence:</p>
+<pre class="text"><code>monitoring/prometheus/screenshots/prometheus-ui.png</code></pre>
+<p>Assessment:</p>
+<p>No operational degradation observed.</p>
+<hr />
+<h2 id="grafana-dashboards">6. Grafana Dashboards</h2>
+<p>Grafana visualized:</p>
+<ul>
+<li>DC01 uptime</li>
+<li>Win11 health</li>
+<li>infrastructure metrics</li>
+<li>operational state</li>
+</ul>
+<p>Evidence:</p>
+<pre class="text"><code>monitoring/grafana/screenshots/grafana-ui.png</code></pre>
+<p>Assessment:</p>
+<p>Visualization improved analyst situational awareness.</p>
+<hr />
+<h2 id="nagios-monitoring">7. Nagios Monitoring</h2>
+<p>Nagios confirmed:</p>
+<ul>
+<li>DC01 UP</li>
+<li>Win11Client UP</li>
+<li>Wazuh UP</li>
+</ul>
+<p>Evidence:</p>
+<pre class="text"><code>monitoring/nagios/screenshots/nagios-ui.png</code></pre>
+<p>Assessment:</p>
+<p>Lateral movement simulation caused no service interruption.</p>
+<hr />
+<h1 id="correlation-analysis">Correlation Analysis</h1>
+<p>Evidence chain:</p>
+<pre class="text"><code>Win11 initiates SMB administrative access
+               ↓
+DC01 records authentication + share access
+               ↓
+Wazuh ingests Windows telemetry
+               ↓
+Security Onion detects SMB traffic
+               ↓
+Prometheus confirms infrastructure stability
+               ↓
+Grafana visualizes operational context
+               ↓
+Analyst reconstructs lateral movement timeline</code></pre>
+<p>Evidence:</p>
+<pre class="text"><code>detections/correlation/screenshots/lateral-movement-correlation.png
+detections/correlation/gifs/lateral-movement-correlation.gif
+detections/correlation/screenshots/multi-tool-evidence.png</code></pre>
+<hr />
+<h1 id="root-cause">Root Cause</h1>
+<p>Intentional internal lateral movement simulation.</p>
+<p>No unauthorized compromise occurred.</p>
+<p>Purpose:</p>
+<p>SOC validation and analyst training.</p>
+<hr />
+<h1 id="impact-assessment">Impact Assessment</h1>
+<h2 id="confidentiality">Confidentiality</h2>
+<p>No breach.</p>
+<hr />
+<h2 id="integrity">Integrity</h2>
+<p>No modification.</p>
+<hr />
+<h2 id="availability">Availability</h2>
+<p>No disruption.</p>
+<hr />
+<h2 id="detection-capability">Detection Capability</h2>
+<p>Strong.</p>
+<hr />
+<h1 id="threat-analysis">Threat Analysis</h1>
+<p>Lateral movement is one of the most dangerous post-compromise
+attacker behaviors.</p>
+<p>Common objectives include:</p>
+<ul>
+<li>domain dominance</li>
+<li>ransomware deployment</li>
+<li>credential harvesting</li>
+<li>privilege escalation</li>
+<li>persistence establishment</li>
+</ul>
+<p>Visibility into east-west traffic is critical for enterprise SOC
+operations.</p>
+<hr />
+<h1 id="analyst-findings">Analyst Findings</h1>
+<p>Findings:</p>
+<ul>
+<li>SMB access telemetry successfully generated</li>
+<li>Active Directory visibility operational</li>
+<li>Wazuh SIEM ingestion functioning correctly</li>
+<li>Security Onion detected east-west traffic</li>
+<li>Windows event correlation successful</li>
+<li>analyst workflow validated</li>
+</ul>
+<hr />
+<h1 id="recommendations">Recommendations</h1>
+<p>Strengthen lateral movement defenses:</p>
+<ul>
+<li>restrict SMB administrative shares</li>
+<li>segment internal networks</li>
+<li>monitor privileged account usage</li>
+<li>alert on abnormal SMB behavior</li>
+<li>enforce least privilege</li>
+<li>deploy enhanced identity analytics</li>
+</ul>
+<hr />
+<h1 id="conclusion">Conclusion</h1>
+<p>The Enterprise SOC Lab successfully validated lateral movement
+monitoring workflows.</p>
+<p>The environment demonstrated:</p>
+<ul>
+<li>enterprise SMB visibility</li>
+<li>Windows authentication telemetry</li>
+<li>SIEM correlation capability</li>
+<li>Active Directory monitoring</li>
+<li>network traffic analysis</li>
+<li>realistic SOC analyst investigation workflows</li>
+</ul>
+<hr />
+<h1 id="related-artifacts">Related Artifacts</h1>
+<p>Windows:</p>
+<pre class="text"><code>windows/dc01/
+windows/win11client/</code></pre>
+<p>Detection:</p>
+<pre class="text"><code>detections/wazuh/
+detections/correlation/</code></pre>
+<p>Monitoring:</p>
+<pre class="text"><code>monitoring/nagios/
+monitoring/prometheus/
+monitoring/grafana/</code></pre>
+<p>Media:</p>
+<pre class="text"><code>site/media/gifs/lateral-movement-demo.gif</code></pre>
+<hr />
+</body>
+</html>

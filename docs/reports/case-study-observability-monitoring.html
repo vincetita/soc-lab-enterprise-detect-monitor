@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>case-study-observability-monitoring</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1
+id="case-study-observability-infrastructure-monitoring-in-an-enterprise-soc-lab">Case
+Study — Observability &amp; Infrastructure Monitoring in an Enterprise
+SOC Lab</h1>
+<p><strong>Case Study ID:</strong> SOC-CS-003<br />
+<strong>Category:</strong> Observability Engineering / Infrastructure
+Monitoring<br />
+<strong>Focus:</strong> Nagios, Prometheus, Grafana Integration<br />
+<strong>Analyst / Engineer:</strong> Vincent Takwi<br />
+<strong>Environment:</strong> Enterprise SOC Lab</p>
+<hr />
+<h1 id="executive-summary">Executive Summary</h1>
+<p>This case study documents the implementation of a layered
+observability and infrastructure monitoring stack inside the Enterprise
+SOC Lab.</p>
+<p>The project integrated:</p>
+<ul>
+<li>Nagios</li>
+<li>Prometheus</li>
+<li>Grafana</li>
+<li>Wazuh</li>
+<li>Security Onion</li>
+<li>Windows Server 2025</li>
+<li>Windows 11</li>
+<li>Ubuntu Linux</li>
+<li>Kali Linux</li>
+</ul>
+<p>The objective was to provide:</p>
+<ul>
+<li>infrastructure health visibility</li>
+<li>host uptime monitoring</li>
+<li>service monitoring</li>
+<li>metrics collection</li>
+<li>operational dashboards</li>
+<li>analyst situational awareness during attack simulations</li>
+</ul>
+<p>The observability stack complemented the SOC detection environment by
+ensuring infrastructure resilience and operational visibility during
+simulated attacks and detection engineering workflows.</p>
+<hr />
+<h1 id="environment-overview">Environment Overview</h1>
+<h2 id="infrastructure-components">Infrastructure Components</h2>
+<table>
+<thead>
+<tr>
+<th>Platform</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Security Onion</td>
+<td>Network Detection</td>
+</tr>
+<tr>
+<td>Wazuh</td>
+<td>SIEM</td>
+</tr>
+<tr>
+<td>DC01</td>
+<td>Active Directory</td>
+</tr>
+<tr>
+<td>Win11Client</td>
+<td>Endpoint</td>
+</tr>
+<tr>
+<td>Ubuntu Node</td>
+<td>Monitoring Stack</td>
+</tr>
+<tr>
+<td>Kali Linux</td>
+<td>Attack Simulation</td>
+</tr>
+<tr>
+<td>Nagios</td>
+<td>Availability Monitoring</td>
+</tr>
+<tr>
+<td>Prometheus</td>
+<td>Metrics Collection</td>
+</tr>
+<tr>
+<td>Grafana</td>
+<td>Visualization</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1 id="monitoring-objectives">Monitoring Objectives</h1>
+<p>Primary goals:</p>
+<ul>
+<li>monitor infrastructure uptime</li>
+<li>validate SOC platform availability</li>
+<li>collect metrics during attacks</li>
+<li>visualize operational health</li>
+<li>support analyst investigations</li>
+<li>improve SOC situational awareness</li>
+<li>identify performance degradation</li>
+</ul>
+<hr />
+<h1 id="monitoring-architecture">Monitoring Architecture</h1>
+<h2 id="nagios">Nagios</h2>
+<p>Role:</p>
+<pre class="text"><code>Availability Monitoring</code></pre>
+<p>Monitored:</p>
+<ul>
+<li>host uptime</li>
+<li>service status</li>
+<li>HTTP availability</li>
+<li>SSH availability</li>
+<li>Wazuh dashboard</li>
+<li>Security Onion access</li>
+<li>Grafana availability</li>
+<li>Prometheus health</li>
+</ul>
+<hr />
+<h2 id="prometheus">Prometheus</h2>
+<p>Role:</p>
+<pre class="text"><code>Metrics Collection</code></pre>
+<p>Collected:</p>
+<ul>
+<li>CPU</li>
+<li>memory</li>
+<li>disk usage</li>
+<li>uptime</li>
+<li>Windows metrics</li>
+<li>Linux metrics</li>
+<li>service telemetry</li>
+</ul>
+<hr />
+<h2 id="grafana">Grafana</h2>
+<p>Role:</p>
+<pre class="text"><code>Visualization &amp; Correlation</code></pre>
+<p>Visualized:</p>
+<ul>
+<li>infrastructure health</li>
+<li>operational metrics</li>
+<li>host performance</li>
+<li>analyst dashboards</li>
+<li>attack context</li>
+</ul>
+<hr />
+<h1 id="network-architecture">Network Architecture</h1>
+<h2 id="core-infrastructure">Core Infrastructure</h2>
+<table>
+<thead>
+<tr>
+<th>Host</th>
+<th>IP Address</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Security Onion</td>
+<td>192.168.117.10</td>
+<td>NDR</td>
+</tr>
+<tr>
+<td>Ubuntu Node</td>
+<td>192.168.117.30</td>
+<td>Monitoring Stack</td>
+</tr>
+<tr>
+<td>Wazuh</td>
+<td>192.168.117.50</td>
+<td>SIEM</td>
+</tr>
+<tr>
+<td>Win11Client</td>
+<td>192.168.117.100</td>
+<td>Endpoint</td>
+</tr>
+<tr>
+<td>Kali Linux</td>
+<td>192.168.117.129</td>
+<td>Attacker</td>
+</tr>
+<tr>
+<td>DC01</td>
+<td>192.168.117.130</td>
+<td>Domain Controller</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1 id="nagios-implementation">Nagios Implementation</h1>
+<h2 id="installation">Installation</h2>
+<p>Ubuntu Node:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt update</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install nagios4 <span class="at">-y</span></span></code></pre></div>
+<hr />
+<h1 id="service-verification">Service Verification</h1>
+<p>Commands:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemctl status nagios</span></code></pre></div>
+<p>Expected:</p>
+<pre class="text"><code>active (running)</code></pre>
+<hr />
+<h1 id="web-interface">Web Interface</h1>
+<p>Access:</p>
+<pre class="text"><code>http://192.168.117.30/nagios</code></pre>
+<hr />
+<h1 id="monitored-services">Monitored Services</h1>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Host</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HTTP</td>
+<td>Ubuntu</td>
+</tr>
+<tr>
+<td>SSH</td>
+<td>Ubuntu</td>
+</tr>
+<tr>
+<td>Wazuh Dashboard</td>
+<td>Wazuh</td>
+</tr>
+<tr>
+<td>Security Onion</td>
+<td>SecOnion</td>
+</tr>
+<tr>
+<td>Grafana</td>
+<td>Ubuntu</td>
+</tr>
+<tr>
+<td>Prometheus</td>
+<td>Ubuntu</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1 id="evidence">Evidence</h1>
+<pre class="text"><code>monitoring/nagios/screenshots/nagios-ui.png
+monitoring/nagios/screenshots/nagios-hosts.png
+monitoring/nagios/screenshots/nagios-services.png
+monitoring/nagios/gifs/nagios-monitoring.gif</code></pre>
+<hr />
+<h1 id="prometheus-implementation">Prometheus Implementation</h1>
+<h2 id="installation-1">Installation</h2>
+<p>Ubuntu:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install prometheus <span class="at">-y</span></span></code></pre></div>
+<hr />
+<h1 id="service-validation">Service Validation</h1>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemctl status prometheus</span></code></pre></div>
+<p>Expected:</p>
+<pre class="text"><code>active (running)</code></pre>
+<hr />
+<h1 id="web-interface-1">Web Interface</h1>
+<pre class="text"><code>http://192.168.117.30:9090</code></pre>
+<hr />
+<h1 id="metrics-queries">Metrics Queries</h1>
+<h2 id="infrastructure-health">Infrastructure Health</h2>
+<pre class="text"><code>up</code></pre>
+<hr />
+<h2 id="cpu-metrics">CPU Metrics</h2>
+<pre class="text"><code>node_cpu_seconds_total</code></pre>
+<hr />
+<h2 id="memory-metrics">Memory Metrics</h2>
+<pre class="text"><code>node_memory_MemAvailable_bytes</code></pre>
+<hr />
+<h1 id="windows-monitoring">Windows Monitoring</h1>
+<p>Windows Exporter enabled telemetry collection from Win11Client.</p>
+<p>Metrics included:</p>
+<ul>
+<li>CPU</li>
+<li>memory</li>
+<li>disk</li>
+<li>network</li>
+<li>uptime</li>
+</ul>
+<hr />
+<h1 id="evidence-1">Evidence</h1>
+<pre class="text"><code>monitoring/prometheus/screenshots/prometheus-ui.png
+monitoring/prometheus/screenshots/prometheus-targets.png
+monitoring/prometheus/screenshots/windows-exporter.png
+monitoring/prometheus/gifs/prometheus-monitoring.gif</code></pre>
+<hr />
+<h1 id="grafana-implementation">Grafana Implementation</h1>
+<h2 id="installation-2">Installation</h2>
+<p>Ubuntu:</p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install grafana <span class="at">-y</span></span></code></pre></div>
+<hr />
+<h1 id="service-validation-1">Service Validation</h1>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemctl status grafana-server</span></code></pre></div>
+<p>Expected:</p>
+<pre class="text"><code>active (running)</code></pre>
+<hr />
+<h1 id="web-interface-2">Web Interface</h1>
+<pre class="text"><code>http://192.168.117.30:3000</code></pre>
+<hr />
+<h1 id="dashboards">Dashboards</h1>
+<p>Configured dashboards:</p>
+<ul>
+<li>Infrastructure Overview</li>
+<li>Windows Metrics</li>
+<li>Linux Metrics</li>
+<li>SOC Platform Health</li>
+<li>Attack Visibility</li>
+<li>CPU Monitoring</li>
+<li>Memory Monitoring</li>
+</ul>
+<hr />
+<h1 id="evidence-2">Evidence</h1>
+<pre class="text"><code>monitoring/grafana/screenshots/grafana-ui.png
+monitoring/grafana/screenshots/grafana-dashboard.png
+monitoring/grafana/screenshots/windows-dashboard.png
+monitoring/grafana/gifs/grafana-monitoring.gif</code></pre>
+<hr />
+<h1 id="observability-during-attacks">Observability During Attacks</h1>
+<p>The observability stack was intentionally validated during attack
+simulations.</p>
+<hr />
+<h1 id="ssh-brute-force-monitoring">1. SSH Brute Force Monitoring</h1>
+<p>Observed:</p>
+<ul>
+<li>SSH uptime</li>
+<li>authentication activity</li>
+<li>CPU utilization</li>
+<li>system stability</li>
+</ul>
+<hr />
+<h1 id="reconnaissance-monitoring">2. Reconnaissance Monitoring</h1>
+<p>Observed:</p>
+<ul>
+<li>scan-related network activity</li>
+<li>service availability</li>
+<li>host responsiveness</li>
+</ul>
+<hr />
+<h1 id="web-enumeration-monitoring">3. Web Enumeration Monitoring</h1>
+<p>Observed:</p>
+<ul>
+<li>Apache availability</li>
+<li>HTTP response behavior</li>
+<li>resource utilization</li>
+</ul>
+<hr />
+<h1 id="kerberos-monitoring">4. Kerberos Monitoring</h1>
+<p>Observed:</p>
+<ul>
+<li>DC01 operational health</li>
+<li>authentication infrastructure stability</li>
+</ul>
+<hr />
+<h1 id="lateral-movement-monitoring">5. Lateral Movement Monitoring</h1>
+<p>Observed:</p>
+<ul>
+<li>SMB traffic</li>
+<li>host stability</li>
+<li>Active Directory availability</li>
+</ul>
+<hr />
+<h1 id="correlation-workflow">Correlation Workflow</h1>
+<p>The observability stack supported SOC operations using:</p>
+<pre class="text"><code>Attack Activity
+       ↓
+Detection Alert
+       ↓
+Infrastructure Health Validation
+       ↓
+Metrics Correlation
+       ↓
+Visualization Dashboards
+       ↓
+Analyst Investigation</code></pre>
+<hr />
+<h1 id="operational-benefits">Operational Benefits</h1>
+<p>The monitoring stack improved:</p>
+<ul>
+<li>analyst situational awareness</li>
+<li>infrastructure visibility</li>
+<li>operational resilience</li>
+<li>troubleshooting capability</li>
+<li>service uptime validation</li>
+<li>attack impact assessment</li>
+</ul>
+<hr />
+<h1 id="key-engineering-challenges">Key Engineering Challenges</h1>
+<p>Challenges encountered:</p>
+<ul>
+<li>VM resource optimization</li>
+<li>storage management</li>
+<li>Windows exporter configuration</li>
+<li>Prometheus target discovery</li>
+<li>Grafana dashboard tuning</li>
+<li>alert timing alignment</li>
+<li>service dependency management</li>
+</ul>
+<hr />
+<h1 id="lessons-learned">Lessons Learned</h1>
+<p>Key findings:</p>
+<ul>
+<li>observability is essential for SOC operations</li>
+<li>availability monitoring complements security monitoring</li>
+<li>metrics improve analyst context</li>
+<li>dashboards accelerate investigations</li>
+<li>layered monitoring improves resilience</li>
+<li>attack simulation validates operational readiness</li>
+</ul>
+<hr />
+<h1 id="security-operational-improvements">Security &amp; Operational
+Improvements</h1>
+<p>Implemented improvements:</p>
+<ul>
+<li>centralized visibility</li>
+<li>infrastructure monitoring</li>
+<li>service uptime validation</li>
+<li>dashboard correlation</li>
+<li>operational telemetry collection</li>
+<li>analyst-focused visualizations</li>
+</ul>
+<hr />
+<h1 id="conclusion">Conclusion</h1>
+<p>This case study demonstrates the successful integration of
+observability engineering into an enterprise-style SOC environment.</p>
+<p>The project validated:</p>
+<ul>
+<li>infrastructure monitoring</li>
+<li>metrics collection</li>
+<li>visualization workflows</li>
+<li>operational resilience</li>
+<li>attack impact monitoring</li>
+<li>analyst situational awareness</li>
+<li>enterprise observability engineering practices</li>
+</ul>
+<p>The monitoring stack significantly improved SOC operational maturity
+and investigative capability.</p>
+<hr />
+<h1 id="related-artifacts">Related Artifacts</h1>
+<p>Monitoring:</p>
+<pre class="text"><code>monitoring/nagios/
+monitoring/prometheus/
+monitoring/grafana/</code></pre>
+<p>Detection:</p>
+<pre class="text"><code>detections/wazuh/
+detections/security-onion/</code></pre>
+<p>Reports:</p>
+<pre class="text"><code>reports/</code></pre>
+<p>Media:</p>
+<pre class="text"><code>site/media/gifs/full-lab-overview.gif
+site/media/gifs/detection-engineering-demo.gif</code></pre>
+<hr />
+</body>
+</html>

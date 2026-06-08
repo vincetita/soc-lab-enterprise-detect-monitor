@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>case-study-detection-engineering</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1 id="case-study-detection-engineering-in-an-enterprise-soc-lab">Case
+Study — Detection Engineering in an Enterprise SOC Lab</h1>
+<p><strong>Case Study ID:</strong> SOC-CS-001<br />
+<strong>Category:</strong> Detection Engineering<br />
+<strong>Focus:</strong> Custom Wazuh Rules, Sigma Logic, ATT&amp;CK
+Mapping<br />
+<strong>Analyst / Engineer:</strong> Vincent Takwi<br />
+<strong>Environment:</strong> Enterprise SOC Lab</p>
+<hr />
+<h1 id="executive-summary">Executive Summary</h1>
+<p>This case study documents the design, implementation, testing, and
+operational validation of custom detection engineering workflows within
+the Enterprise SOC Lab.</p>
+<p>The environment integrates:</p>
+<ul>
+<li>Wazuh SIEM</li>
+<li>Security Onion</li>
+<li>Windows Server 2025 Active Directory</li>
+<li>Windows 11</li>
+<li>Ubuntu Linux</li>
+<li>Kali Linux</li>
+<li>Nagios</li>
+<li>Prometheus</li>
+<li>Grafana</li>
+</ul>
+<p>The objective was to move beyond default alerts and engineer custom
+detections aligned with real-world attacker techniques using:</p>
+<ul>
+<li>Wazuh custom rules</li>
+<li>MITRE ATT&amp;CK mapping</li>
+<li>Sigma-style logic</li>
+<li>event correlation</li>
+<li>endpoint telemetry</li>
+<li>network visibility</li>
+</ul>
+<p>The project demonstrates practical blue-team engineering workflows
+used in modern SOC environments.</p>
+<hr />
+<h1 id="soc-architecture-context">SOC Architecture Context</h1>
+<h2 id="core-systems">Core Systems</h2>
+<table>
+<thead>
+<tr>
+<th>Platform</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Wazuh</td>
+<td>SIEM / Endpoint Detection</td>
+</tr>
+<tr>
+<td>Security Onion</td>
+<td>NDR / Threat Hunting</td>
+</tr>
+<tr>
+<td>Windows Server 2025</td>
+<td>Active Directory</td>
+</tr>
+<tr>
+<td>Win11Client</td>
+<td>Enterprise Endpoint</td>
+</tr>
+<tr>
+<td>Ubuntu Node</td>
+<td>Linux Monitoring Node</td>
+</tr>
+<tr>
+<td>Kali Linux</td>
+<td>Attack Simulation</td>
+</tr>
+<tr>
+<td>Nagios</td>
+<td>Availability Monitoring</td>
+</tr>
+<tr>
+<td>Prometheus</td>
+<td>Metrics Collection</td>
+</tr>
+<tr>
+<td>Grafana</td>
+<td>Visualization</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1 id="detection-engineering-goals">Detection Engineering Goals</h1>
+<p>Primary objectives:</p>
+<ul>
+<li>build custom detections</li>
+<li>validate endpoint telemetry</li>
+<li>map alerts to MITRE ATT&amp;CK</li>
+<li>improve detection fidelity</li>
+<li>simulate realistic attacks</li>
+<li>correlate multi-source evidence</li>
+<li>validate SOC investigation workflows</li>
+</ul>
+<hr />
+<h1 id="detection-engineering-workflow">Detection Engineering
+Workflow</h1>
+<p>The workflow followed a realistic SOC lifecycle:</p>
+<pre class="text"><code>Attack Simulation
+        ↓
+Telemetry Generation
+        ↓
+Rule Engineering
+        ↓
+Rule Validation
+        ↓
+Alert Triggering
+        ↓
+Correlation Analysis
+        ↓
+Incident Documentation</code></pre>
+<hr />
+<h1 id="detection-use-cases-implemented">Detection Use Cases
+Implemented</h1>
+<h2 id="ssh-brute-force-detection">1. SSH Brute Force Detection</h2>
+<h3 id="mitre-mapping">MITRE Mapping</h3>
+<pre class="text"><code>T1110 — Brute Force</code></pre>
+<h3 id="attack-simulation">Attack Simulation</h3>
+<p>Hydra brute-force attack from Kali against Ubuntu SSH service.</p>
+<p>Command:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">hydra</span> <span class="at">-l</span> vincetita <span class="at">-P</span> ~/soc-lab/test-passwords.txt ssh://192.168.117.30 <span class="at">-V</span> <span class="at">-t</span> 4</span></code></pre></div>
+<hr />
+<h2 id="custom-wazuh-rule">Custom Wazuh Rule</h2>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode xml"><code class="sourceCode xml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">rule</span> <span class="ot">id=</span><span class="st">&quot;100100&quot;</span> <span class="ot">level=</span><span class="st">&quot;12&quot;</span>&gt;</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">if_group</span>&gt;authentication_failed&lt;/<span class="kw">if_group</span>&gt;</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">match</span>&gt;Failed password&lt;/<span class="kw">match</span>&gt;</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">description</span>&gt;Custom SOC Lab SSH Brute Force Detection&lt;/<span class="kw">description</span>&gt;</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">mitre</span>&gt;</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">id</span>&gt;T1110&lt;/<span class="kw">id</span>&gt;</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">mitre</span>&gt;</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">rule</span>&gt;</span></code></pre></div>
+<hr />
+<h2 id="validation">Validation</h2>
+<p>Command:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> /var/ossec/bin/wazuh-logtest</span></code></pre></div>
+<p>Test payload:</p>
+<pre class="text"><code>May 24 20:30:00 ubuntu-node sshd[1234]: Failed password for vincetita from 192.168.117.129 port 52144 ssh2</code></pre>
+<p>Expected:</p>
+<pre class="text"><code>Rule id: 100100</code></pre>
+<hr />
+<h2 id="evidence">Evidence</h2>
+<pre class="text"><code>detections/wazuh/screenshots/wazuh-bruteforce.png
+detections/wazuh/screenshots/wazuh-custom-bruteforce.png
+detections/wazuh/gifs/wazuh-bruteforce-detection.gif
+detections/wazuh/rules/custom_bruteforce_rule.xml</code></pre>
+<hr />
+<h1 id="network-reconnaissance-detection">2. Network Reconnaissance
+Detection</h1>
+<h2 id="mitre-mapping-1">MITRE Mapping</h2>
+<pre class="text"><code>T1046 — Network Service Discovery</code></pre>
+<hr />
+<h2 id="attack-simulation-1">Attack Simulation</h2>
+<p>Nmap reconnaissance from Kali.</p>
+<p>Command:</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nmap</span> <span class="at">-sS</span> <span class="at">-sV</span> <span class="at">-O</span> 192.168.117.10 192.168.117.30 192.168.117.50 192.168.117.100 192.168.117.130</span></code></pre></div>
+<hr />
+<h2 id="detection-rule">Detection Rule</h2>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode xml"><code class="sourceCode xml"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">rule</span> <span class="ot">id=</span><span class="st">&quot;100101&quot;</span> <span class="ot">level=</span><span class="st">&quot;10&quot;</span>&gt;</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">match</span>&gt;nmap&lt;/<span class="kw">match</span>&gt;</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">description</span>&gt;Custom SOC Lab Nmap Recon Detection&lt;/<span class="kw">description</span>&gt;</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">mitre</span>&gt;</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">id</span>&gt;T1046&lt;/<span class="kw">id</span>&gt;</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">mitre</span>&gt;</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">rule</span>&gt;</span></code></pre></div>
+<hr />
+<h2 id="evidence-1">Evidence</h2>
+<pre class="text"><code>detections/wazuh/screenshots/wazuh-recon-detection.png
+detections/wazuh/gifs/wazuh-recon-detection.gif
+detections/wazuh/rules/recon_rule.xml</code></pre>
+<hr />
+<h1 id="windows-authentication-monitoring">3. Windows Authentication
+Monitoring</h1>
+<h2 id="mitre-mapping-2">MITRE Mapping</h2>
+<pre class="text"><code>T1110 — Brute Force</code></pre>
+<hr />
+<h2 id="simulation">Simulation</h2>
+<p>Repeated failed Windows authentication attempts.</p>
+<p>Command:</p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>runas <span class="op">/</span>user<span class="op">:</span>corp\fakeuser cmd</span></code></pre></div>
+<hr />
+<h2 id="key-events">Key Events</h2>
+<table>
+<thead>
+<tr>
+<th>Event ID</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4625</td>
+<td>Failed Logon</td>
+</tr>
+<tr>
+<td>4624</td>
+<td>Successful Logon</td>
+</tr>
+<tr>
+<td>4648</td>
+<td>Explicit Credential Use</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="evidence-2">Evidence</h2>
+<pre class="text"><code>detections/wazuh/screenshots/wazuh-windows-events.png
+detections/wazuh/screenshots/wazuh-windows-bruteforce.png</code></pre>
+<hr />
+<h1 id="kerberos-authentication-monitoring">4. Kerberos Authentication
+Monitoring</h1>
+<h2 id="mitre-mapping-3">MITRE Mapping</h2>
+<pre class="text"><code>T1558 — Steal or Forge Kerberos Tickets</code></pre>
+<hr />
+<h2 id="simulation-1">Simulation</h2>
+<p>Commands:</p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>klist purge</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dir</span> \\dc01\c$</span></code></pre></div>
+<hr />
+<h2 id="key-event">Key Event</h2>
+<pre class="text"><code>4768</code></pre>
+<hr />
+<h2 id="evidence-3">Evidence</h2>
+<pre class="text"><code>detections/wazuh/screenshots/wazuh-kerberos-alerts.png
+detections/wazuh/rules/kerberos_attack_rule.xml</code></pre>
+<hr />
+<h1 id="lateral-movement-detection">5. Lateral Movement Detection</h1>
+<h2 id="mitre-mapping-4">MITRE Mapping</h2>
+<pre class="text"><code>T1021 — Remote Services</code></pre>
+<hr />
+<h2 id="simulation-2">Simulation</h2>
+<p>Command:</p>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>net use \\dc01\c$</span></code></pre></div>
+<hr />
+<h2 id="key-events-1">Key Events</h2>
+<table>
+<thead>
+<tr>
+<th>Event ID</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5140</td>
+<td>SMB Share Access</td>
+</tr>
+<tr>
+<td>5145</td>
+<td>Detailed File Share Access</td>
+</tr>
+<tr>
+<td>4624</td>
+<td>Successful Logon</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="evidence-4">Evidence</h2>
+<pre class="text"><code>detections/wazuh/screenshots/wazuh-lateral-movement.png
+detections/wazuh/rules/windows_lateral_movement_rule.xml</code></pre>
+<hr />
+<h1 id="sigma-detection-engineering">Sigma Detection Engineering</h1>
+<p>Sigma rules were also created to support portable SIEM logic.</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span><span class="kw">:</span><span class="at"> Nmap Port Scan Detected</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">id</span><span class="kw">:</span><span class="at"> 7f3a1a11-1111-4444-9999-123456789abc</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">status</span><span class="kw">:</span><span class="at"> experimental</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="fu">logsource</span><span class="kw">:</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">category</span><span class="kw">:</span><span class="at"> network_connection</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="fu">detection</span><span class="kw">:</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">selection</span><span class="kw">:</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">Image|contains</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;nmap&quot;</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">condition</span><span class="kw">:</span><span class="at"> selection</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a><span class="fu">level</span><span class="kw">:</span><span class="at"> high</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a><span class="fu">tags</span><span class="kw">:</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> attack.t1046</span></span></code></pre></div>
+<p>Evidence:</p>
+<pre class="text"><code>detections/sigma/rules/</code></pre>
+<hr />
+<h1 id="multi-tool-correlation">Multi-Tool Correlation</h1>
+<p>Detection engineering was validated using:</p>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Platform</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Endpoint</td>
+<td>Wazuh</td>
+</tr>
+<tr>
+<td>Network</td>
+<td>Security Onion</td>
+</tr>
+<tr>
+<td>Availability</td>
+<td>Nagios</td>
+</tr>
+<tr>
+<td>Metrics</td>
+<td>Prometheus</td>
+</tr>
+<tr>
+<td>Visualization</td>
+<td>Grafana</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1 id="correlation-workflow">Correlation Workflow</h1>
+<pre class="text"><code>Attack Activity
+       ↓
+Host Telemetry
+       ↓
+Network Detection
+       ↓
+Custom SIEM Rule Trigger
+       ↓
+MITRE Classification
+       ↓
+Analyst Investigation
+       ↓
+Incident Documentation</code></pre>
+<hr />
+<h1 id="observability-integration">Observability Integration</h1>
+<p>The observability stack provided infrastructure awareness during
+attack simulations.</p>
+<h2 id="nagios">Nagios</h2>
+<p>Validated:</p>
+<ul>
+<li>host uptime</li>
+<li>service health</li>
+<li>infrastructure availability</li>
+</ul>
+<hr />
+<h2 id="prometheus">Prometheus</h2>
+<p>Collected:</p>
+<ul>
+<li>CPU</li>
+<li>memory</li>
+<li>service metrics</li>
+<li>uptime statistics</li>
+</ul>
+<hr />
+<h2 id="grafana">Grafana</h2>
+<p>Visualized:</p>
+<ul>
+<li>operational health</li>
+<li>metrics correlation</li>
+<li>attack context</li>
+<li>infrastructure behavior</li>
+</ul>
+<hr />
+<h1 id="engineering-challenges">Engineering Challenges</h1>
+<p>Challenges encountered:</p>
+<ul>
+<li>Windows telemetry normalization</li>
+<li>Linux log parsing</li>
+<li>custom XML rule syntax validation</li>
+<li>attack simulation timing</li>
+<li>cross-tool timestamp alignment</li>
+<li>VM resource optimization</li>
+<li>storage management</li>
+</ul>
+<hr />
+<h1 id="lessons-learned">Lessons Learned</h1>
+<p>Key lessons:</p>
+<ul>
+<li>layered telemetry greatly improves confidence</li>
+<li>endpoint + network correlation is critical</li>
+<li>MITRE mapping improves analyst context</li>
+<li>custom detections significantly increase SOC maturity</li>
+<li>observability tooling improves investigations</li>
+<li>attack simulation is essential for validation</li>
+</ul>
+<hr />
+<h1 id="security-improvements-implemented">Security Improvements
+Implemented</h1>
+<p>Implemented improvements:</p>
+<ul>
+<li>custom brute-force detections</li>
+<li>recon detection logic</li>
+<li>Kerberos monitoring</li>
+<li>SMB lateral movement visibility</li>
+<li>enhanced SIEM correlation</li>
+<li>structured evidence collection</li>
+<li>analyst-focused investigation workflows</li>
+</ul>
+<hr />
+<h1 id="conclusion">Conclusion</h1>
+<p>This case study demonstrates practical detection engineering
+methodologies inside a realistic enterprise SOC environment.</p>
+<p>The project successfully validated:</p>
+<ul>
+<li>custom SIEM detections</li>
+<li>MITRE ATT&amp;CK alignment</li>
+<li>cross-tool correlation</li>
+<li>Windows + Linux telemetry</li>
+<li>Active Directory monitoring</li>
+<li>attack simulation workflows</li>
+<li>analyst investigation processes</li>
+</ul>
+<p>The lab reflects real-world SOC operational practices and blue-team
+engineering methodology.</p>
+<hr />
+<h1 id="related-artifacts">Related Artifacts</h1>
+<p>Detection:</p>
+<pre class="text"><code>detections/wazuh/
+detections/correlation/
+detections/sigma/</code></pre>
+<p>Monitoring:</p>
+<pre class="text"><code>monitoring/nagios/
+monitoring/prometheus/
+monitoring/grafana/</code></pre>
+<p>Reports:</p>
+<pre class="text"><code>reports/</code></pre>
+<p>Media:</p>
+<pre class="text"><code>site/media/gifs/detection-engineering-demo.gif</code></pre>
+<hr />
+</body>
+</html>

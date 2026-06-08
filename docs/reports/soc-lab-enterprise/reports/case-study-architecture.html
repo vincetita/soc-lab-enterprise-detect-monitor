@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>case-study-architecture</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1 id="case-study-enterprise-soc-architecture-threat-visibility">Case
+Study — Enterprise SOC Architecture &amp; Threat Visibility</h1>
+<p><strong>Case Study ID:</strong> SOC-CS-004<br />
+<strong>Category:</strong> SOC Architecture / Threat Visibility
+Engineering<br />
+<strong>Focus:</strong> Enterprise Detection Architecture Design<br />
+<strong>Analyst / Engineer:</strong> Vincent Takwi<br />
+<strong>Environment:</strong> Enterprise SOC Lab</p>
+<hr />
+<h1 id="executive-summary">Executive Summary</h1>
+<p>This case study documents the design and implementation of a layered
+enterprise-style Security Operations Center (SOC) architecture built to
+simulate realistic blue-team monitoring, detection engineering, threat
+hunting, and observability workflows.</p>
+<p>The lab environment integrates:</p>
+<ul>
+<li>Wazuh SIEM</li>
+<li>Security Onion NDR</li>
+<li>Windows Server 2025 Active Directory</li>
+<li>Windows 11 Enterprise Client</li>
+<li>Ubuntu Monitoring Infrastructure</li>
+<li>Kali Linux Attack Platform</li>
+<li>Nagios</li>
+<li>Prometheus</li>
+<li>Grafana</li>
+</ul>
+<p>The project was designed to replicate modern enterprise detection
+architecture using:</p>
+<ul>
+<li>endpoint telemetry</li>
+<li>network visibility</li>
+<li>Active Directory monitoring</li>
+<li>observability engineering</li>
+<li>attack simulation</li>
+<li>cross-tool evidence correlation</li>
+</ul>
+<p>The environment demonstrates practical SOC operational workflows
+aligned with real-world blue-team practices.</p>
+<hr />
+<h1 id="architecture-objectives">Architecture Objectives</h1>
+<p>Primary goals:</p>
+<ul>
+<li>simulate enterprise SOC operations</li>
+<li>build layered detection visibility</li>
+<li>monitor Windows + Linux infrastructure</li>
+<li>validate Active Directory monitoring</li>
+<li>integrate SIEM + NDR telemetry</li>
+<li>support realistic attack simulation</li>
+<li>enable analyst investigation workflows</li>
+<li>improve observability and resilience</li>
+</ul>
+<hr />
+<h1 id="high-level-architecture">High-Level Architecture</h1>
+<h2 id="core-detection-stack">Core Detection Stack</h2>
+<table>
+<thead>
+<tr>
+<th>Platform</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Wazuh</td>
+<td>SIEM / Endpoint Detection</td>
+</tr>
+<tr>
+<td>Security Onion</td>
+<td>Network Detection &amp; Threat Hunting</td>
+</tr>
+<tr>
+<td>Nagios</td>
+<td>Availability Monitoring</td>
+</tr>
+<tr>
+<td>Prometheus</td>
+<td>Metrics Collection</td>
+</tr>
+<tr>
+<td>Grafana</td>
+<td>Visualization &amp; Dashboards</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="enterprise-infrastructure">Enterprise Infrastructure</h2>
+<table>
+<thead>
+<tr>
+<th>Platform</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Windows Server 2025</td>
+<td>Active Directory Domain Services</td>
+</tr>
+<tr>
+<td>Windows 11</td>
+<td>Enterprise Endpoint</td>
+</tr>
+<tr>
+<td>Ubuntu Node</td>
+<td>Monitoring Infrastructure</td>
+</tr>
+<tr>
+<td>Kali Linux</td>
+<td>Red Team Attack Simulation</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1 id="network-design">Network Design</h1>
+<h2 id="internal-soc-network">Internal SOC Network</h2>
+<table>
+<thead>
+<tr>
+<th>Host</th>
+<th>IP Address</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Security Onion</td>
+<td>192.168.117.10</td>
+<td>NDR</td>
+</tr>
+<tr>
+<td>Ubuntu Node</td>
+<td>192.168.117.30</td>
+<td>Monitoring Stack</td>
+</tr>
+<tr>
+<td>Wazuh Manager</td>
+<td>192.168.117.50</td>
+<td>SIEM</td>
+</tr>
+<tr>
+<td>Win11Client</td>
+<td>192.168.117.100</td>
+<td>Endpoint</td>
+</tr>
+<tr>
+<td>Kali Linux</td>
+<td>192.168.117.129</td>
+<td>Attacker</td>
+</tr>
+<tr>
+<td>DC01</td>
+<td>192.168.117.130</td>
+<td>Domain Controller</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1 id="virtualization-platform">Virtualization Platform</h1>
+<p>The environment runs inside VMware Workstation on Windows 11 host
+infrastructure.</p>
+<h2 id="vm-roles">VM Roles</h2>
+<table>
+<thead>
+<tr>
+<th>VM</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Security Onion</td>
+<td>Network detection platform</td>
+</tr>
+<tr>
+<td>Wazuh</td>
+<td>SIEM platform</td>
+</tr>
+<tr>
+<td>Ubuntu</td>
+<td>Monitoring + Web + Metrics</td>
+</tr>
+<tr>
+<td>DC01</td>
+<td>Active Directory</td>
+</tr>
+<tr>
+<td>Win11Client</td>
+<td>Enterprise workstation</td>
+</tr>
+<tr>
+<td>Kali Linux</td>
+<td>Attack simulation</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1 id="detection-architecture">Detection Architecture</h1>
+<p>The SOC architecture follows a layered visibility model.</p>
+<hr />
+<h1 id="endpoint-visibility">Endpoint Visibility</h1>
+<h2 id="wazuh">Wazuh</h2>
+<p>Wazuh provides:</p>
+<ul>
+<li>Windows event collection</li>
+<li>Linux log monitoring</li>
+<li>authentication telemetry</li>
+<li>MITRE ATT&amp;CK mapping</li>
+<li>custom detections</li>
+<li>centralized alerting</li>
+</ul>
+<hr />
+<h1 id="network-visibility">Network Visibility</h1>
+<h2 id="security-onion">Security Onion</h2>
+<p>Security Onion provides:</p>
+<ul>
+<li>Suricata IDS</li>
+<li>Zeek network analysis</li>
+<li>packet visibility</li>
+<li>network threat hunting</li>
+<li>reconnaissance detection</li>
+<li>SMB/Kerberos visibility</li>
+</ul>
+<hr />
+<h1 id="identity-visibility">Identity Visibility</h1>
+<h2 id="active-directory-monitoring">Active Directory Monitoring</h2>
+<p>DC01 provides:</p>
+<ul>
+<li>Kerberos telemetry</li>
+<li>authentication visibility</li>
+<li>Windows security logs</li>
+<li>domain authentication monitoring</li>
+<li>SMB access telemetry</li>
+</ul>
+<p>Key events monitored:</p>
+<table>
+<thead>
+<tr>
+<th>Event ID</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4624</td>
+<td>Successful Logon</td>
+</tr>
+<tr>
+<td>4625</td>
+<td>Failed Logon</td>
+</tr>
+<tr>
+<td>4768</td>
+<td>Kerberos Ticket Request</td>
+</tr>
+<tr>
+<td>5140</td>
+<td>SMB Share Access</td>
+</tr>
+<tr>
+<td>5145</td>
+<td>Detailed File Share Access</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1 id="observability-architecture">Observability Architecture</h1>
+<h2 id="nagios">Nagios</h2>
+<p>Purpose:</p>
+<pre class="text"><code>Availability Monitoring</code></pre>
+<p>Monitored:</p>
+<ul>
+<li>host uptime</li>
+<li>service health</li>
+<li>HTTP</li>
+<li>SSH</li>
+<li>SIEM availability</li>
+<li>dashboard accessibility</li>
+</ul>
+<hr />
+<h2 id="prometheus">Prometheus</h2>
+<p>Purpose:</p>
+<pre class="text"><code>Metrics Collection</code></pre>
+<p>Collected:</p>
+<ul>
+<li>CPU metrics</li>
+<li>memory usage</li>
+<li>disk utilization</li>
+<li>uptime statistics</li>
+<li>Windows exporter metrics</li>
+<li>Linux node metrics</li>
+</ul>
+<hr />
+<h2 id="grafana">Grafana</h2>
+<p>Purpose:</p>
+<pre class="text"><code>Visualization &amp; Correlation</code></pre>
+<p>Provided:</p>
+<ul>
+<li>analyst dashboards</li>
+<li>operational visibility</li>
+<li>attack context</li>
+<li>infrastructure monitoring</li>
+<li>metric correlation</li>
+</ul>
+<hr />
+<h1 id="detection-engineering-layer">Detection Engineering Layer</h1>
+<p>Custom detections were engineered for:</p>
+<table>
+<thead>
+<tr>
+<th>Attack Type</th>
+<th>MITRE Mapping</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SSH Brute Force</td>
+<td>T1110</td>
+</tr>
+<tr>
+<td>Nmap Recon</td>
+<td>T1046</td>
+</tr>
+<tr>
+<td>Web Enumeration</td>
+<td>T1595.003</td>
+</tr>
+<tr>
+<td>Kerberos Activity</td>
+<td>T1558</td>
+</tr>
+<tr>
+<td>Lateral Movement</td>
+<td>T1021</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1 id="threat-visibility-workflow">Threat Visibility Workflow</h1>
+<p>The architecture was intentionally designed for cross-tool
+investigation workflows.</p>
+<hr />
+<h1 id="investigation-flow">Investigation Flow</h1>
+<pre class="text"><code>Attack Simulation
+        ↓
+Host Telemetry Generation
+        ↓
+Network Traffic Observation
+        ↓
+SIEM Alert Correlation
+        ↓
+Metrics &amp; Availability Validation
+        ↓
+Visualization Dashboards
+        ↓
+Analyst Investigation
+        ↓
+Incident Reporting</code></pre>
+<hr />
+<h1 id="attack-simulations-implemented">Attack Simulations
+Implemented</h1>
+<h2 id="ssh-brute-force">1. SSH Brute Force</h2>
+<p>Tool:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">hydra</span></span></code></pre></div>
+<p>Target:</p>
+<p>Ubuntu SSH service.</p>
+<hr />
+<h1 id="network-reconnaissance">2. Network Reconnaissance</h1>
+<p>Tool:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nmap</span></span></code></pre></div>
+<p>Targets:</p>
+<p>Multiple enterprise hosts.</p>
+<hr />
+<h1 id="web-enumeration">3. Web Enumeration</h1>
+<p>Tool:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">gobuster</span></span></code></pre></div>
+<p>Target:</p>
+<p>Apache HTTP service.</p>
+<hr />
+<h1 id="windows-authentication-abuse">4. Windows Authentication
+Abuse</h1>
+<p>Simulation:</p>
+<p>Repeated failed logons.</p>
+<hr />
+<h1 id="kerberos-authentication-monitoring">5. Kerberos Authentication
+Monitoring</h1>
+<p>Commands:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>klist purge</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dir</span> \\dc01\c$</span></code></pre></div>
+<hr />
+<h1 id="lateral-movement-simulation">6. Lateral Movement Simulation</h1>
+<p>Command:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>net use \\dc01\c$</span></code></pre></div>
+<hr />
+<h1 id="evidence-collection-strategy">Evidence Collection Strategy</h1>
+<p>Evidence was collected across:</p>
+<ul>
+<li>screenshots</li>
+<li>GIF demonstrations</li>
+<li>logs</li>
+<li>dashboards</li>
+<li>terminal output</li>
+<li>SIEM alerts</li>
+<li>network telemetry</li>
+<li>metrics dashboards</li>
+</ul>
+<hr />
+<h1 id="correlation-architecture">Correlation Architecture</h1>
+<p>The SOC environment supports layered evidence reconstruction.</p>
+<p>Example:</p>
+<pre class="text"><code>Attack Activity
+       ↓
+Endpoint Telemetry
+       ↓
+Network Detection
+       ↓
+SIEM Correlation
+       ↓
+Metrics Validation
+       ↓
+Visualization Dashboards
+       ↓
+Analyst Investigation</code></pre>
+<hr />
+<h1 id="folder-architecture">Folder Architecture</h1>
+<p>The project uses structured enterprise documentation.</p>
+<h2 id="core-structure">Core Structure</h2>
+<pre class="text"><code>soc-lab-enterprise/
+├── architecture/
+├── attacks/
+├── detections/
+├── monitoring/
+├── reports/
+├── windows/
+├── scripts/
+├── screenshots/
+└── site/</code></pre>
+<hr />
+<h1 id="operational-workflows">Operational Workflows</h1>
+<p>The architecture supports:</p>
+<ul>
+<li>threat hunting</li>
+<li>detection engineering</li>
+<li>incident response</li>
+<li>attack simulation</li>
+<li>evidence correlation</li>
+<li>observability analysis</li>
+<li>analyst investigation training</li>
+</ul>
+<hr />
+<h1 id="security-engineering-principles">Security Engineering
+Principles</h1>
+<p>The project follows:</p>
+<ul>
+<li>defense in depth</li>
+<li>layered monitoring</li>
+<li>telemetry correlation</li>
+<li>visibility redundancy</li>
+<li>ATT&amp;CK alignment</li>
+<li>observability integration</li>
+<li>analyst-driven investigation workflows</li>
+</ul>
+<hr />
+<h1 id="key-engineering-challenges">Key Engineering Challenges</h1>
+<p>Challenges encountered:</p>
+<ul>
+<li>VM resource optimization</li>
+<li>storage management</li>
+<li>Windows telemetry normalization</li>
+<li>Linux log integration</li>
+<li>SIEM rule tuning</li>
+<li>timestamp synchronization</li>
+<li>dashboard optimization</li>
+<li>cross-tool evidence alignment</li>
+</ul>
+<hr />
+<h1 id="lessons-learned">Lessons Learned</h1>
+<p>Key findings:</p>
+<ul>
+<li>layered telemetry dramatically improves detection confidence</li>
+<li>SIEM + NDR integration reduces blind spots</li>
+<li>observability significantly improves investigations</li>
+<li>Active Directory visibility is critical</li>
+<li>attack simulation validates defensive maturity</li>
+<li>structured evidence collection accelerates investigations</li>
+</ul>
+<hr />
+<h1 id="security-improvements-implemented">Security Improvements
+Implemented</h1>
+<p>Implemented enhancements:</p>
+<ul>
+<li>custom Wazuh detections</li>
+<li>network reconnaissance monitoring</li>
+<li>Kerberos visibility</li>
+<li>SMB lateral movement monitoring</li>
+<li>observability dashboards</li>
+<li>infrastructure health validation</li>
+<li>analyst-focused investigation workflows</li>
+</ul>
+<hr />
+<h1 id="operational-benefits">Operational Benefits</h1>
+<p>The architecture improved:</p>
+<ul>
+<li>detection visibility</li>
+<li>investigation speed</li>
+<li>telemetry correlation</li>
+<li>analyst situational awareness</li>
+<li>operational resilience</li>
+<li>infrastructure monitoring</li>
+<li>incident reconstruction capability</li>
+</ul>
+<hr />
+<h1 id="conclusion">Conclusion</h1>
+<p>This Enterprise SOC Lab demonstrates a realistic layered security
+monitoring architecture aligned with modern blue-team operational
+practices.</p>
+<p>The project successfully integrates:</p>
+<ul>
+<li>endpoint detection</li>
+<li>network visibility</li>
+<li>identity monitoring</li>
+<li>observability engineering</li>
+<li>attack simulation</li>
+<li>cross-tool correlation</li>
+<li>analyst investigation workflows</li>
+</ul>
+<p>The environment reflects practical enterprise SOC engineering
+methodology and demonstrates strong capability in:</p>
+<ul>
+<li>detection engineering</li>
+<li>SOC operations</li>
+<li>SIEM integration</li>
+<li>Active Directory monitoring</li>
+<li>observability engineering</li>
+<li>blue-team analysis</li>
+</ul>
+<hr />
+<h1 id="related-artifacts">Related Artifacts</h1>
+<p>Architecture:</p>
+<pre class="text"><code>architecture/</code></pre>
+<p>Detection:</p>
+<pre class="text"><code>detections/</code></pre>
+<p>Monitoring:</p>
+<pre class="text"><code>monitoring/</code></pre>
+<p>Reports:</p>
+<pre class="text"><code>reports/</code></pre>
+<p>Media:</p>
+<pre class="text"><code>site/media/gifs/full-lab-overview.gif
+site/media/gifs/detection-engineering-demo.gif
+site/media/gifs/recon-demo.gif
+site/media/gifs/bruteforce-demo.gif</code></pre>
+<hr />
+</body>
+</html>
