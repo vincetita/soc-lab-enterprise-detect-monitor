@@ -1,0 +1,8 @@
+<group name="windows_lateral">
+  <rule id="100511" level="13">
+    <description>Potential Windows lateral movement via remote services</description>
+    <mitre>
+      <id>T1021</id>
+    </mitre>
+  </rule>
+</group>

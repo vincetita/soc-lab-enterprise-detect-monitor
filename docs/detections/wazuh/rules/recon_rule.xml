@@ -1,0 +1,8 @@
+<group name="custom_recon">
+  <rule id="100501" level="10">
+    <description>Potential network reconnaissance detected</description>
+    <mitre>
+      <id>T1046</id>
+    </mitre>
+  </rule>
+</group>

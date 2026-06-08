@@ -1,0 +1,124 @@
+──(kali㉿kali)-[~]
+└─$ sudo nmap -sS -sV -O 192.168.117.10 192.168.117.30 192.168.117.50 192.168.117.100 192.168.117.130 | tee ~/nmap-services.log
+[sudo] password for kali:
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-05-25 11:23 EDT
+Nmap scan report for 192.168.117.10
+Host is up (0.00066s latency).
+Not shown: 999 filtered tcp ports (no-response)
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 8.7 (protocol 2.0)
+MAC Address: 00:0C:29:B2:13:77 (VMware)
+Warning: OSScan results may be unreliable because we could not find at least 1 open and 1 closed port
+Aggressive OS guesses: Linux 4.15 - 5.19 (97%), Linux 4.19 (97%), Linux 5.0 - 5.14 (97%), OpenWrt 21.02 (Linux 5.4) (97%), MikroTik RouterOS 7.2 - 7.5 (Linux 5.6.3) (97%), Linux 6.0 (94%), Linux 5.4 - 5.10 (91%), Linux 2.6.32 (91%), Linux 2.6.32 - 3.13 (91%), Linux 3.10 - 4.11 (91%)
+No exact OS matches for host (test conditions non-ideal).
+Network Distance: 1 hop
+
+Nmap scan report for 192.168.117.30
+Host is up (0.00076s latency).
+Not shown: 995 closed tcp ports (reset)
+PORT     STATE SERVICE    VERSION
+22/tcp   open  ssh        OpenSSH 9.6p1 Ubuntu 3ubuntu13.16 (Ubuntu Linux; protocol 2.0)
+80/tcp   open  http       Apache httpd 2.4.58 ((Ubuntu))
+3000/tcp open  http       Grafana http
+9090/tcp open  http       Golang net/http server (Go-IPFS json-rpc or InfluxDB API)
+9100/tcp open  jetdirect?
+MAC Address: 00:50:56:37:E5:AA (VMware)
+Device type: general purpose
+Running: Linux 4.X|5.X
+OS CPE: cpe:/o:linux:linux_kernel:4 cpe:/o:linux:linux_kernel:5
+OS details: Linux 4.15 - 5.19
+Network Distance: 1 hop
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Nmap scan report for 192.168.117.50
+Host is up (0.00073s latency).
+Not shown: 996 closed tcp ports (reset)
+PORT     STATE SERVICE    VERSION
+22/tcp   open  ssh        OpenSSH 9.6p1 Ubuntu 3ubuntu13.15 (Ubuntu Linux; protocol 2.0)
+80/tcp   open  http       Apache httpd 2.4.58 ((Ubuntu))
+443/tcp  open  ssl/https
+9100/tcp open  jetdirect?
+1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
+SF-Port443-TCP:V=7.95%T=SSL%I=7%D=5/25%Time=6A14698A%P=x86_64-pc-linux-gnu
+SF:%r(GetRequest,10D,"HTTP/1\.1\x20503\x20Service\x20Unavailable\r\nretry-
+SF:after:\x2030\r\ncontent-type:\x20text/html;\x20charset=utf-8\r\ncache-c
+SF:ontrol:\x20private,\x20no-cache,\x20no-store,\x20must-revalidate\r\ncon
+SF:tent-length:\x2039\r\nDate:\x20Mon,\x2025\x20May\x202026\x2015:23:54\x2
+SF:0GMT\r\nConnection:\x20close\r\n\r\nWazuh\x20dashboard\x20server\x20is\
+SF:x20not\x20ready\x20yet")%r(HTTPOptions,10D,"HTTP/1\.1\x20503\x20Service
+SF:\x20Unavailable\r\nretry-after:\x2030\r\ncontent-type:\x20text/html;\x2
+SF:0charset=utf-8\r\ncache-control:\x20private,\x20no-cache,\x20no-store,\
+SF:x20must-revalidate\r\ncontent-length:\x2039\r\nDate:\x20Mon,\x2025\x20M
+SF:ay\x202026\x2015:23:54\x20GMT\r\nConnection:\x20close\r\n\r\nWazuh\x20d
+SF:ashboard\x20server\x20is\x20not\x20ready\x20yet")%r(FourOhFourRequest,1
+SF:0D,"HTTP/1\.1\x20503\x20Service\x20Unavailable\r\nretry-after:\x2030\r\
+SF:ncontent-type:\x20text/html;\x20charset=utf-8\r\ncache-control:\x20priv
+SF:ate,\x20no-cache,\x20no-store,\x20must-revalidate\r\ncontent-length:\x2
+SF:039\r\nDate:\x20Mon,\x2025\x20May\x202026\x2015:23:54\x20GMT\r\nConnect
+SF:ion:\x20close\r\n\r\nWazuh\x20dashboard\x20server\x20is\x20not\x20ready
+SF:\x20yet")%r(tor-versions,1C,"HTTP/1\.1\x20400\x20Bad\x20Request\r\n\r\n
+SF:")%r(RTSPRequest,10D,"HTTP/1\.1\x20503\x20Service\x20Unavailable\r\nret
+SF:ry-after:\x2030\r\ncontent-type:\x20text/html;\x20charset=utf-8\r\ncach
+SF:e-control:\x20private,\x20no-cache,\x20no-store,\x20must-revalidate\r\n
+SF:content-length:\x2039\r\nDate:\x20Mon,\x2025\x20May\x202026\x2015:23:59
+SF:\x20GMT\r\nConnection:\x20close\r\n\r\nWazuh\x20dashboard\x20server\x20
+SF:is\x20not\x20ready\x20yet")%r(DNSStatusRequestTCP,1C,"HTTP/1\.1\x20400\
+SF:x20Bad\x20Request\r\n\r\n")%r(LDAPSearchReq,1C,"HTTP/1\.1\x20400\x20Bad
+SF:\x20Request\r\n\r\n")%r(LDAPBindReq,1C,"HTTP/1\.1\x20400\x20Bad\x20Requ
+SF:est\r\n\r\n")%r(WMSRequest,1C,"HTTP/1\.1\x20400\x20Bad\x20Request\r\n\r
+SF:\n");
+MAC Address: 00:50:56:38:CA:4F (VMware)
+Device type: general purpose
+Running: Linux 4.X|5.X
+OS CPE: cpe:/o:linux:linux_kernel:4 cpe:/o:linux:linux_kernel:5
+OS details: Linux 4.15 - 5.19
+Network Distance: 1 hop
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Nmap scan report for 192.168.117.100
+Host is up (0.00070s latency).
+Not shown: 996 filtered tcp ports (no-response)
+PORT    STATE SERVICE       VERSION
+22/tcp  open  ssh           OpenSSH for_Windows_9.5 (protocol 2.0)
+135/tcp open  msrpc         Microsoft Windows RPC
+139/tcp open  netbios-ssn   Microsoft Windows netbios-ssn
+445/tcp open  microsoft-ds?
+MAC Address: 00:0C:29:07:15:69 (VMware)
+Warning: OSScan results may be unreliable because we could not find at least 1 open and 1 closed port
+Device type: general purpose|phone|specialized
+Running (JUST GUESSING): Microsoft Windows 11|10|2022|2008|Phone|7 (96%)
+OS CPE: cpe:/o:microsoft:windows_11 cpe:/o:microsoft:windows_10 cpe:/o:microsoft:windows_server_2022 cpe:/o:microsoft:windows_server_2008::sp1 cpe:/o:microsoft:windows cpe:/o:microsoft:windows_7
+Aggressive OS guesses: Microsoft Windows 11 21H2 (96%), Microsoft Windows 10 (91%), Microsoft Windows 10 1607 (91%), Microsoft Windows Server 2022 (90%), Microsoft Windows Server 2008 SP1 (88%), Microsoft Windows Phone 7.5 or 8.0 (88%), Microsoft Windows Embedded Standard 7 (87%), Microsoft Windows 10 1511 - 1607 (86%)
+No exact OS matches for host (test conditions non-ideal).
+Network Distance: 1 hop
+Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows
+
+Nmap scan report for 192.168.117.130
+Host is up (0.00067s latency).
+Not shown: 987 filtered tcp ports (no-response)
+PORT     STATE SERVICE       VERSION
+22/tcp   open  ssh           OpenSSH for_Windows_9.5 (protocol 2.0)
+53/tcp   open  domain        Simple DNS Plus
+88/tcp   open  kerberos-sec  Microsoft Windows Kerberos (server time: 2026-05-25 15:23:46Z)
+135/tcp  open  msrpc         Microsoft Windows RPC
+139/tcp  open  netbios-ssn   Microsoft Windows netbios-ssn
+389/tcp  open  ldap          Microsoft Windows Active Directory LDAP (Domain: corp.local0., Site: Default-First-Site-Name)
+445/tcp  open  microsoft-ds?
+464/tcp  open  kpasswd5?
+593/tcp  open  ncacn_http    Microsoft Windows RPC over HTTP 1.0
+636/tcp  open  tcpwrapped
+3268/tcp open  ldap          Microsoft Windows Active Directory LDAP (Domain: corp.local0., Site: Default-First-Site-Name)
+3269/tcp open  tcpwrapped
+5985/tcp open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
+MAC Address: 00:0C:29:CF:03:F7 (VMware)
+Warning: OSScan results may be unreliable because we could not find at least 1 open and 1 closed port
+Device type: general purpose
+Running (JUST GUESSING): Microsoft Windows 2022|2016|11|10|2012 (94%)
+OS CPE: cpe:/o:microsoft:windows_server_2022 cpe:/o:microsoft:windows_server_2016 cpe:/o:microsoft:windows_11 cpe:/o:microsoft:windows_10 cpe:/o:microsoft:windows_server_2012:r2
+Aggressive OS guesses: Microsoft Windows Server 2022 (94%), Microsoft Windows Server 2016 (91%), Microsoft Windows 11 21H2 (90%), Microsoft Windows 10 (86%), Microsoft Windows 10 1607 (85%), Microsoft Windows Server 2012 or Windows Server 2012 R2 (85%), Microsoft Windows Server 2012 R2 (85%)
+No exact OS matches for host (test conditions non-ideal).
+Network Distance: 1 hop
+Service Info: Host: DC01; OS: Windows; CPE: cpe:/o:microsoft:windows
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 5 IP addresses (5 hosts up) scanned in 80.54 seconds
